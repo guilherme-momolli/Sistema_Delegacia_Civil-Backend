@@ -2,6 +2,7 @@ package br.gov.pr.pc.dp.sistema_delegacia_civil.model;
 
 import br.gov.pr.pc.dp.sistema_delegacia_civil.model.enums.Situacao;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.model.enums.TipoArmaFogo;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -47,10 +48,11 @@ public class Arma {
     @Column(name = "local_arma")
     private String localArma;
 
-    @Enumerated(EnumType.STRING)
-    private Situacao situacao;
+//    @Enumerated(EnumType.STRING)
+//    private Situacao situacao;
 
     @ManyToOne
     @JoinColumn(name = "inquerito_policial_id")
+    @JsonBackReference
     private InqueritoPolicial inqueritoPolicial;
 }

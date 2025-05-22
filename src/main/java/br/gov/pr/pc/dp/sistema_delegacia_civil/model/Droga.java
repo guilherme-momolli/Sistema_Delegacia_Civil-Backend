@@ -2,6 +2,7 @@ package br.gov.pr.pc.dp.sistema_delegacia_civil.model;
 
 import br.gov.pr.pc.dp.sistema_delegacia_civil.model.enums.TipoDroga;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.model.enums.UnidadeMedida;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -45,10 +46,11 @@ public class Droga {
     @Column(name = "local_droga")
     private String localDroga;
 
-    @Column(name = "situacao_droga")
-    private String situacaoDroga;
+//    @Column(name = "situacao_droga")
+//    private String situacaoDroga;
 
     @ManyToOne
     @JoinColumn(name = "inquerito_policial_id")
+    @JsonBackReference
     private InqueritoPolicial inqueritoPolicial;
 }

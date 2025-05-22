@@ -23,13 +23,6 @@ public class WebConfig implements WebMvcConfigurer {
                 .setCachePeriod(3600); // Cache para 1 hora
     }
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")  // Agora aplica para todas as APIs
-                .allowedOrigins("http://localhost:4200")
-                .allowedMethods("GET", "POST", "PUT", "DELETE")
-                .allowCredentials(true);
-    }
 
     @Override
     public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {

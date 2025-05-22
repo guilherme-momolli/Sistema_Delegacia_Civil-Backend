@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 import static br.gov.pr.pc.dp.sistema_delegacia_civil.validators.PrivilegioUtil.temPrivilegioSuperior;
 
@@ -57,7 +58,7 @@ public class UsuarioService {
         }
 
         Privilegio privilegioNovo = cadastroRequestDTO.getPrivilegio();
-        Privilegio privilegioExecutor = Privilegio.valueOf(jwtUtil.extractPrivilegio(token));
+        Privilegio privilegioExecutor = Privilegio.fromString(jwtUtil.extractPrivilegio(token));
 
         if (!temPrivilegioSuperior(privilegioExecutor, privilegioNovo)) {
             throw new RuntimeException("Você não tem permissão para criar um usuário com esse privilégio.");
@@ -77,6 +78,13 @@ public class UsuarioService {
     public Usuario updateUsuario(Long id, Usuario usuario, String token) {
         Usuario usuarioParaAtualizar = usuarioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+
+        Optional<Usuario> usuarioComMesmoEmail = usuarioRepository.findByEmail(usuario.getEmail());
+        if (usuarioComMesmoEmail.isPresent() && !usuarioComMesmoEmail.get().getId().equals(id)) {
+            throw new RuntimeException("Já existe um usuário com este email.");
+        }
+
+
 
         Privilegio privilegioAtual = usuarioParaAtualizar.getPrivilegio();
         Privilegio privilegioNovo = usuario.getPrivilegio();

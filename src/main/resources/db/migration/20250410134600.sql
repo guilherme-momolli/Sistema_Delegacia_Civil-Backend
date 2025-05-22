@@ -50,7 +50,6 @@ CREATE TABLE droga (
     observacao TEXT,
     numero_lacre BIGINT,
     local_droga VARCHAR(255),
-    situacao_droga VARCHAR(255),
     inquerito_policial_id BIGINT,
     CONSTRAINT fk_droga_inquerito FOREIGN KEY (inquerito_policial_id) REFERENCES inquerito_policial(id)
 );
@@ -69,7 +68,6 @@ CREATE TABLE arma (
     numero_lacre VARCHAR(255),
     valor NUMERIC(15,2),
     local_arma VARCHAR(255),
-    situacao VARCHAR(255),
     inquerito_policial_id BIGINT,
     CONSTRAINT fk_droga_inquerito FOREIGN KEY (inquerito_policial_id) REFERENCES inquerito_policial(id)
 );

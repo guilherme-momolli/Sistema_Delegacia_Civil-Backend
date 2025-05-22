@@ -28,6 +28,12 @@ public class InqueritoPolicialService {
     }
 
     public InqueritoPolicial save(InqueritoPolicial inquerito) {
+        if (inquerito.getArmas() != null) {
+            inquerito.getArmas().forEach(arma -> arma.setInqueritoPolicial(inquerito));
+        }
+        if (inquerito.getDrogas() != null) {
+            inquerito.getDrogas().forEach(droga -> droga.setInqueritoPolicial(inquerito));
+        }
         return repository.save(inquerito);
     }
 
@@ -46,13 +52,28 @@ public class InqueritoPolicialService {
         inquerito.setInvestigado(updated.getInvestigado());
         inquerito.setVitima(updated.getVitima());
         inquerito.setNaturezaDoDelito(updated.getNaturezaDoDelito());
-        inquerito.setArmas(updated.getArmas());
-        inquerito.setDrogas(updated.getDrogas());
         inquerito.setInstituicao(updated.getInstituicao());
         inquerito.setObservacao(updated.getObservacao());
 
+        inquerito.getArmas().clear();
+        if (updated.getArmas() != null) {
+            updated.getArmas().forEach(arma -> {
+                arma.setInqueritoPolicial(inquerito);
+                inquerito.getArmas().add(arma);
+            });
+        }
+
+        inquerito.getDrogas().clear();
+        if (updated.getDrogas() != null) {
+            updated.getDrogas().forEach(droga -> {
+                droga.setInqueritoPolicial(inquerito);
+                inquerito.getDrogas().add(droga);
+            });
+        }
+
         return repository.save(inquerito);
     }
+
 
 
     public void delete(Long id) {

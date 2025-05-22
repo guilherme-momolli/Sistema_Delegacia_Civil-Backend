@@ -2,6 +2,7 @@ package br.gov.pr.pc.dp.sistema_delegacia_civil.model;
 
 import br.gov.pr.pc.dp.sistema_delegacia_civil.model.enums.Situacao;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -12,6 +13,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "inquerito_policial")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class InqueritoPolicial {
 
     @Id
@@ -44,9 +46,11 @@ public class InqueritoPolicial {
     private String vitima;
 
     @OneToMany(mappedBy = "inqueritoPolicial", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Droga> drogas = new ArrayList<>();
 
     @OneToMany(mappedBy = "inqueritoPolicial", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Arma> armas = new ArrayList<>();
 
 //     @OneToMany(mappedBy = "inqueritoPolicial")
@@ -57,8 +61,8 @@ public class InqueritoPolicial {
 
     private String observacao;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "instituicao_id", nullable = false)
     @JsonIgnoreProperties("inqueritosPoliciais")
     private Instituicao instituicao;
-    }
+}

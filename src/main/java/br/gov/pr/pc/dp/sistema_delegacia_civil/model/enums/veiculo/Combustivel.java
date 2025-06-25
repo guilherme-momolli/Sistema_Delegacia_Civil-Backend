@@ -1,4 +1,4 @@
-package br.gov.pr.pc.dp.sistema_delegacia_civil.model.enums;
+package br.gov.pr.pc.dp.sistema_delegacia_civil.model.enums.veiculo;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -7,9 +7,10 @@ public enum Combustivel {
 
     DIESEL("Diesel"),
     ELETRICO("Elétrico"),
-    FLEX("Flex"),
     ETANOL("Etanol"),
+    FLEX("Flex"),
     GASOLINA("Gasolina"),
+    GNV("Gás Natural Veiuclar - GNV"),
     HIBRIDO("Hibrido");
 
     private String descricao;

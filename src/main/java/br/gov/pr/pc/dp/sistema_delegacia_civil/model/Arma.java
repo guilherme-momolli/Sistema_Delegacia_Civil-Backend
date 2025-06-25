@@ -1,7 +1,8 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.model;
 
-import br.gov.pr.pc.dp.sistema_delegacia_civil.model.enums.Situacao;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.model.enums.TipoArmaFogo;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.model.enums.arma.Calibre;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.model.enums.arma.SituacaoArmaFogo;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.model.enums.arma.TipoArmaFogo;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -17,15 +18,21 @@ public class Arma {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne
+    @JoinColumn(name = "propietario_id")
+    private Pessoa propietario;
+
+    private String especie;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_arma")
     private TipoArmaFogo tipoArmaFogo;
 
-    private String especie;
-
+    @Column(name = "marca")
     private String marca;
 
-    private String calibre;
+    @Enumerated(EnumType.STRING)
+    private Calibre calibre;
 
     @Column(name = "numero_porte")
     private String numeroPorte;
@@ -48,8 +55,8 @@ public class Arma {
     @Column(name = "local_arma")
     private String localArma;
 
-//    @Enumerated(EnumType.STRING)
-//    private Situacao situacao;
+    @Enumerated(EnumType.STRING)
+    private SituacaoArmaFogo situacao;
 
     @ManyToOne
     @JoinColumn(name = "inquerito_policial_id")

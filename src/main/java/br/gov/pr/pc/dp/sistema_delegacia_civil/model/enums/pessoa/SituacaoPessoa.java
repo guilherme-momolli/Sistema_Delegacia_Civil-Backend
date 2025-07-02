@@ -3,7 +3,7 @@ package br.gov.pr.pc.dp.sistema_delegacia_civil.model.enums.pessoa;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public enum Situacao {
+public enum SituacaoPessoa {
 
     CONDENADO("Condenado"),
     DESAPARECIDO("Desaparecido"),
@@ -15,11 +15,11 @@ public enum Situacao {
     PRESO("Preso"),
     SUSPEITO("Suspeito"),
     TESTEMUNHA("Testemunha"),
-    RE("RE");
+    RE("Ré");
 
-    private String descricao;
+    private final String descricao;
 
-    Situacao(String descricao) {
+    SituacaoPessoa(String descricao) {
         this.descricao = descricao;
     }
 
@@ -29,10 +29,10 @@ public enum Situacao {
     }
 
     @JsonCreator
-    public static Situacao fromString(String descricao) {
-        for (Situacao situacao : Situacao.values()) {
-            if (situacao.getDescricao().equals(descricao)) {
-                return situacao;
+    public static SituacaoPessoa fromString(String descricao) {
+        for (SituacaoPessoa situacaoPessoa : SituacaoPessoa.values()) {
+            if (situacaoPessoa.getDescricao().equals(descricao)) {
+                return situacaoPessoa;
             }
         }
         throw new IllegalArgumentException("Valor inválido para Situação: " + descricao);

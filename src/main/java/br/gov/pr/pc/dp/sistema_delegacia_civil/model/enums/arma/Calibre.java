@@ -59,7 +59,7 @@ public enum Calibre {
     CALIBRE_9_3X62MM("9.3x62mm"),
     CALIBRE_9MM_LUGER("9mm Luger");
 
-    private String descricao;
+    private final String descricao;
 
     Calibre(String descricao) {
         this.descricao = descricao;

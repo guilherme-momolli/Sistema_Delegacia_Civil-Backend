@@ -10,7 +10,7 @@ public enum Etnia {
     AMARELA("Amarela"),
     INDIGENA("Indigena");
 
-    private String descricao;
+    private final String descricao;
 
     Etnia(String descricao) {
         this.descricao = descricao;

@@ -228,7 +228,7 @@ public enum Pais {
     ZIMBABUE("Zimbábue");
 
 
-    private String descricao;
+    private final String descricao;
 
     Pais(String descricao) {
         this.descricao = descricao;

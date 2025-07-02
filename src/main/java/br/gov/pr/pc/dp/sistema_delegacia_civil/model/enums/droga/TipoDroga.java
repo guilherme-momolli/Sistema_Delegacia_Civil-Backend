@@ -1,4 +1,4 @@
-package br.gov.pr.pc.dp.sistema_delegacia_civil.model.enums;
+package br.gov.pr.pc.dp.sistema_delegacia_civil.model.enums.droga;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -36,7 +36,7 @@ public enum TipoDroga {
     SOLVENTES_E_INALANTES("Solventes e inalantes"),
     SPECIAL_K("Special k");
 
-    private String descricao;
+    private final String descricao;
 
     TipoDroga(String descricao) {
         this.descricao = descricao;

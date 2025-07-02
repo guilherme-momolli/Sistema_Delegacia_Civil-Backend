@@ -5,19 +5,16 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum UnidadeMedida {
 
-    // SÓLIDOS (massa)
     GRAMA("g"),
     QUILOGRAMA("kg"),
     MILIGRAMA("mg"),
     TONELADA("t"),
 
-    // SÓLIDOS (quantidade/unidade)
     UNIDADE("unidade"),
     DUZIA("dúzia"),
     CENTENA("centena"),
     MILHEIRO("milheiro"),
 
-    // LÍQUIDOS (volume)
     MILILITRO("ml"),
     LITRO("l"),
     CENTIMETRO_CUBICO("cm³"),

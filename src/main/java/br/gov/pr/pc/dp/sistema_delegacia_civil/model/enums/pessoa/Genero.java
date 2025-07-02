@@ -9,7 +9,7 @@ public enum Genero {
     HOMEM_TRANSGENERO("Homem transgenero"),
     MULHER_TRANSGENERO("Mulher transgenero");
 
-    private String descricao;
+    private final String descricao;
 
     Genero(String descricao) {
         this.descricao = descricao;

@@ -12,7 +12,7 @@ public enum EstadoCivil {
     UNIAO_ESTAVEL("União Estavel"),
     VIUVO("Viúvo");
 
-    private String descricao;
+    private final String descricao;
 
     EstadoCivil(String descricao) {
         this.descricao = descricao;

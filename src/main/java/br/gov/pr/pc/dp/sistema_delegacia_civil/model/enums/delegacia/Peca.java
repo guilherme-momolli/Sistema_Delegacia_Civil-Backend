@@ -1,4 +1,4 @@
-package br.gov.pr.pc.dp.sistema_delegacia_civil.model.enums;
+package br.gov.pr.pc.dp.sistema_delegacia_civil.model.enums.delegacia;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -8,7 +8,7 @@ public enum Peca {
     APF("Auto de Presião em Flagrante"),
     PORTARIA("Portaria");
 
-    private String descricao;
+    private final String descricao;
 
     Peca(String descricao) {
         this.descricao = descricao;

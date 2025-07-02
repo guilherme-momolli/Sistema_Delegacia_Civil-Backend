@@ -1,4 +1,4 @@
-package br.gov.pr.pc.dp.sistema_delegacia_civil.model.enums;
+package br.gov.pr.pc.dp.sistema_delegacia_civil.model.enums.delegacia;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -7,7 +7,7 @@ public enum Origem {
     PMPR("Policia Militar do Paraná"),
     PCPR("Policia Civil do Paraná");
 
-    private String descricao;
+    private final String descricao;
 
     Origem(String descricao) {
         this.descricao = descricao;
@@ -25,6 +25,6 @@ public enum Origem {
                 return o;
             }
         }
-        throw new IllegalArgumentException("Valor inválido para Origem: " + value);
+        throw new IllegalArgumentException("Valor inválido para origem: " + value);
     }
 }

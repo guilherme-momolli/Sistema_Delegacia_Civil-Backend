@@ -1,9 +1,9 @@
-package br.gov.pr.pc.dp.sistema_delegacia_civil.model.enums;
+package br.gov.pr.pc.dp.sistema_delegacia_civil.model.enums.delegacia;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public enum Situacao {
+public enum SituacaoInquerito {
 
     ANDAMENTO("Andamento"),
     FINALIZADO("Finalizado"),
@@ -12,7 +12,7 @@ public enum Situacao {
 
     private final String descricao;
 
-    Situacao(String descricao) {
+    SituacaoInquerito(String descricao) {
         this.descricao = descricao;
     }
 
@@ -22,12 +22,12 @@ public enum Situacao {
     }
 
     @JsonCreator
-    public static Situacao fromString(String value) {
-        for (Situacao s : Situacao.values()) {
+    public static SituacaoInquerito fromString(String value) {
+        for (SituacaoInquerito s : SituacaoInquerito.values()) {
             if (s.descricao.equalsIgnoreCase(value)) {
                 return s;
             }
         }
-        throw new IllegalArgumentException("Valor inválido para Situação: " + value);
+        throw new IllegalArgumentException("Valor inválido para situação: " + value);
     }
 }

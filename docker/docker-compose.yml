@@ -8,4 +8,4 @@ services:
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://192.168.0.115:5432/delegacia
       - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=0000
+      - SPRING_DATASOURCE_PASSWORD=0905

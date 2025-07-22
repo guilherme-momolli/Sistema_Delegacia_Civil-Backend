@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum SituacaoPessoa {
 
+    AFASTADO("Afastado"),
     CONDENADO("Condenado"),
     DESAPARECIDO("Desaparecido"),
     DESCONHECIDO("Desconhecido"),
@@ -13,9 +14,11 @@ public enum SituacaoPessoa {
     INDICIADO("Indicado"),
     INVESTIGADO("Investigado"),
     PRESO("Preso"),
+    RE("Ré"),
+    REGULAR("Regular"),
     SUSPEITO("Suspeito"),
-    TESTEMUNHA("Testemunha"),
-    RE("Ré");
+    TESTEMUNHA("Testemunha");
+
 
     private final String descricao;
 

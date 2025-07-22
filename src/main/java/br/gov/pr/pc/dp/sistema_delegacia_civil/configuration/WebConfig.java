@@ -1,10 +1,8 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.configuration;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.AbstractHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -18,8 +16,18 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:uploads/")
+        String basePath = System.getProperty("user.home") + "/Documentos/Uploads/";
+
+        registry.addResourceHandler("/uploads/images/**")
+                .addResourceLocations("file:" + basePath + "Images/")
+                .setCachePeriod(3600);
+
+        registry.addResourceHandler("/uploads/audios/**")
+                .addResourceLocations("file:" + basePath + "Audios/")
+                .setCachePeriod(3600);
+
+        registry.addResourceHandler("/uploads/videos/**")
+                .addResourceLocations("file:" + basePath + "Videos/")
                 .setCachePeriod(3600);
     }
 

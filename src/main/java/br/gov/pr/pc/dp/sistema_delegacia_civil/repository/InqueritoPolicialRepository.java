@@ -12,7 +12,7 @@ import java.util.Optional;
 @Repository
 public interface InqueritoPolicialRepository extends JpaRepository<InqueritoPolicial, Long> {
 
-    List<InqueritoPolicial> findByInstituicaoId(Long instituicaoId);
+    List<InqueritoPolicial> findByDelegaciaId(Long delegaciaId);
 
     @EntityGraph(attributePaths = {"apreensoes", "apreensoes.objeto", "apreensoes.arma", "apreensoes.droga", "apreensoes.veiculo"})
     Optional<InqueritoPolicial> findById(Long id);

@@ -1,6 +1,6 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.validators;
 
-import br.gov.pr.pc.dp.sistema_delegacia_civil.model.enums.Privilegio;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.Privilegio;
 
 public class PrivilegioUtil {
 

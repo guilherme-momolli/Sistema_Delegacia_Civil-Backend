@@ -1,6 +1,6 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.validators;
 
-import br.gov.pr.pc.dp.sistema_delegacia_civil.model.enums.Privilegio;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.Privilegio;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -26,11 +26,11 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateToken(String email, Long instituicaoId, String instituicaoNome, String usuarioNome, Privilegio privilegio) {
+    public String generateToken(String email, Long delegaciaId, String delegaciaNome, String usuarioNome, Privilegio privilegio) {
         return Jwts.builder()
                 .setSubject(email)
-                .claim("instituicaoId", instituicaoId)
-                .claim("instituicaoNome", instituicaoNome)
+                .claim("delegaciaId", delegaciaId)
+                .claim("delegaciaNome", delegaciaNome)
                 .claim("usuarioNome", usuarioNome)
                 .claim("privilegio", privilegio)
                 .setIssuedAt(new Date())
@@ -63,11 +63,11 @@ public class JwtUtil {
     }
 
     public Long extractInstituicaoId(String token) {
-        return extractClaim(token, claims -> claims.get("instituicaoId", Long.class));
+        return extractClaim(token, claims -> claims.get("delegaciaId", Long.class));
     }
 
     public String extractInstituicaoNome(String token) {
-        return extractClaim(token, claims -> claims.get("instituicaoNome", String.class));
+        return extractClaim(token, claims -> claims.get("delegaciaNome", String.class));
     }
 
     public String extractUsuarioNome(String token) {

@@ -30,7 +30,7 @@ CREATE TABLE instituicao (
 CREATE TABLE delegacia (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     imagem_url VARCHAR(255),
-    tipo_delegacia VARCHAR(50) NOT NULL,
+    tipo_delegacia VARCHAR(50),
     nome VARCHAR(255),
     especializacao VARCHAR(100),
     email VARCHAR(255),
@@ -111,13 +111,10 @@ CREATE TABLE inquerito_policial (
     natureza_do_delito TEXT,
     observacao TEXT,
     delegacia_id BIGINT NOT NULL,
-    status_aprovacao VARCHAR(25),
-    ativo BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_inquerito_delegacia FOREIGN KEY (delegacia_id) REFERENCES delegacia(id)
 );
-
 
 CREATE TABLE bem (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,

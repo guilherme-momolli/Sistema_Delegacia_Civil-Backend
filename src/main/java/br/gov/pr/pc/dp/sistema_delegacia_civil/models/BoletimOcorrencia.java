@@ -2,12 +2,15 @@ package br.gov.pr.pc.dp.sistema_delegacia_civil.models;
 
 import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.delegacia.OrigemForcaPolicial;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity
@@ -19,6 +22,7 @@ public class BoletimOcorrencia {
     private Long id;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "origem_forca_policial")
     private OrigemForcaPolicial origemForcaPolicial;
 
     @Column(name = "data_ocorrencia")
@@ -28,11 +32,16 @@ public class BoletimOcorrencia {
 
     private String natureza;
 
-    private String represetacao;
+    @Column(name = "representacao")
+    private String representacao;
 
     @ManyToOne
     @JoinColumn(name = "endereco_id")
     private Endereco endereco;
+
+    @OneToMany(mappedBy = "boletimOcorrencia", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("boletim-pessoas")
+    private List<PessoaEnvolvimento> pessoasEnvolvidas = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "delegacia_id", nullable = false)

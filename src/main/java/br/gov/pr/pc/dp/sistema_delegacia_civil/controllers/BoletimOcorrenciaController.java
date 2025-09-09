@@ -1,12 +1,13 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.controllers;
 
-import br.gov.pr.pc.dp.sistema_delegacia_civil.models.BoletimOcorrencia;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.boletim_ocorrencia.BoletimOcorrenciaRequestDTO;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.boletim_ocorrencia.BoletimOcorrenciaResponseDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.services.BoletimOcorrenciaService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,60 +15,64 @@ import java.util.List;
 
 @CrossOrigin
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/boletim_ocorrencia")
+@RequiredArgsConstructor
 @Tag(name = "Boletins de Ocorrência", description = "Gerenciamento de boletins de ocorrência")
 public class BoletimOcorrenciaController {
 
-    @Autowired
-    private BoletimOcorrenciaService service;
+    private final BoletimOcorrenciaService boletimService;
 
     @Operation(summary = "Listar todos os boletins de ocorrência")
     @GetMapping("/list")
-    public ResponseEntity<List<BoletimOcorrencia>> getAll() {
-        return ResponseEntity.ok(service.findAll());
+    public ResponseEntity<List<BoletimOcorrenciaResponseDTO>> getAll() {
+        List<BoletimOcorrenciaResponseDTO> response = boletimService.findAll()
+                .stream()
+                .map(BoletimOcorrenciaResponseDTO::fromEntity)
+                .toList();
+        return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "Buscar boletim por ID")
-    @ApiResponse(responseCode = "200", description = "Boletim encontrado")
-    @ApiResponse(responseCode = "404", description = "Boletim não encontrado")
-    @GetMapping("/getById/{id}")
-    public ResponseEntity<BoletimOcorrencia> getById(@PathVariable Long id) {
-        return service.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    @Operation(summary = "Buscar boletim de ocorrência por ID")
+    @GetMapping("/{id}")
+    public ResponseEntity<BoletimOcorrenciaResponseDTO> getById(@PathVariable Long id) {
+        var boletim = boletimService.findById(id);
+        return ResponseEntity.ok(BoletimOcorrenciaResponseDTO.fromEntity(boletim));
     }
 
-    @Operation(summary = "Listar boletins por delegacia")
-    @ApiResponse(responseCode = "200", description = "Boletins encontrados")
-    @ApiResponse(responseCode = "404", description = "Delegacia não encontrada")
+    @Operation(summary = "Buscar boletins por delegacia")
     @GetMapping("/delegacia/{delegaciaId}")
-    public List<BoletimOcorrencia> getByDelegacia(@PathVariable Long delegaciaId) {
-        return service.getByDelegacia(delegaciaId);
+    public ResponseEntity<List<BoletimOcorrenciaResponseDTO>> getByDelegacia(@PathVariable Long delegaciaId) {
+        List<BoletimOcorrenciaResponseDTO> response = boletimService.getBoletinsByDelegacia(delegaciaId)
+                .stream()
+                .map(BoletimOcorrenciaResponseDTO::fromEntity)
+                .toList();
+        return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "Criar um novo boletim de ocorrência")
+    @Operation(summary = "Criar novo boletim de ocorrência")
     @PostMapping("/create")
-    public ResponseEntity<BoletimOcorrencia> create(@RequestBody BoletimOcorrencia boletim) {
-        BoletimOcorrencia saved = service.save(boletim);
-        return ResponseEntity.status(201).body(saved);
+    public ResponseEntity<BoletimOcorrenciaResponseDTO> create(
+            @Valid @RequestBody BoletimOcorrenciaRequestDTO requestDTO) {
+
+        var boletim = boletimService.createBoletimOcorrencia(requestDTO.toEntity(), requestDTO.getPessoasEnvolvidas());
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(BoletimOcorrenciaResponseDTO.fromEntity(boletim));
     }
 
-    @Operation(summary = "Atualizar um boletim de ocorrência existente")
+    @Operation(summary = "Atualizar boletim de ocorrência")
     @PutMapping("/update/{id}")
-    public ResponseEntity<BoletimOcorrencia> update(@PathVariable Long id, @RequestBody BoletimOcorrencia boletim) {
-        try {
-            BoletimOcorrencia updated = service.updateBoletimOcorrencia(id, boletim);
-            return ResponseEntity.ok(updated);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<BoletimOcorrenciaResponseDTO> update(
+            @PathVariable Long id,
+            @Valid @RequestBody BoletimOcorrenciaRequestDTO requestDTO) {
+
+        var boletim = boletimService.updateBoletim(id, requestDTO.toEntity(), requestDTO.getPessoasEnvolvidas());
+        return ResponseEntity.ok(BoletimOcorrenciaResponseDTO.fromEntity(boletim));
     }
 
-    @Operation(summary = "Excluir um boletim de ocorrência")
+    @Operation(summary = "Excluir boletim de ocorrência")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        service.deleteBoletimOcorrencia(id);
+        boletimService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

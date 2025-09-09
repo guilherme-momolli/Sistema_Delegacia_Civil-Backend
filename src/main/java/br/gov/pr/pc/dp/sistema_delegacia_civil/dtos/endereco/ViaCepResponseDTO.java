@@ -1,4 +1,4 @@
-package br.gov.pr.pc.dp.sistema_delegacia_civil.dtos;
+package br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.endereco;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

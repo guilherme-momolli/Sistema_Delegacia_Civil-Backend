@@ -1,7 +1,7 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.boletim_ocorrencia;
 
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.endereco.EnderecoRequestDTO;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.pessoa.PessoaEnvolvimentoRequestDTO;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.pessoa_envolvimento.PessoaEnvolvimentoRequestDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.delegacia.OrigemForcaPolicial;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.BoletimOcorrencia;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Delegacia;

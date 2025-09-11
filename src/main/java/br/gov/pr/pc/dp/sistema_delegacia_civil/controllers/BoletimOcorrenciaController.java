@@ -2,6 +2,7 @@ package br.gov.pr.pc.dp.sistema_delegacia_civil.controllers;
 
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.boletim_ocorrencia.BoletimOcorrenciaRequestDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.boletim_ocorrencia.BoletimOcorrenciaResponseDTO;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.mappers.BoletimOcorrenciaMapper;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.services.BoletimOcorrenciaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,7 +20,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name = "Boletins de Ocorrência", description = "Gerenciamento de boletins de ocorrência")
 public class BoletimOcorrenciaController {
-
     private final BoletimOcorrenciaService boletimService;
 
     @Operation(summary = "Listar todos os boletins de ocorrência")
@@ -27,7 +27,7 @@ public class BoletimOcorrenciaController {
     public ResponseEntity<List<BoletimOcorrenciaResponseDTO>> getAll() {
         List<BoletimOcorrenciaResponseDTO> response = boletimService.findAll()
                 .stream()
-                .map(BoletimOcorrenciaResponseDTO::fromEntity)
+                .map(BoletimOcorrenciaMapper::toResponseDTO)
                 .toList();
         return ResponseEntity.ok(response);
     }
@@ -36,7 +36,7 @@ public class BoletimOcorrenciaController {
     @GetMapping("/{id}")
     public ResponseEntity<BoletimOcorrenciaResponseDTO> getById(@PathVariable Long id) {
         var boletim = boletimService.findById(id);
-        return ResponseEntity.ok(BoletimOcorrenciaResponseDTO.fromEntity(boletim));
+        return ResponseEntity.ok(BoletimOcorrenciaMapper.toResponseDTO(boletim));
     }
 
     @Operation(summary = "Buscar boletins por delegacia")
@@ -44,7 +44,7 @@ public class BoletimOcorrenciaController {
     public ResponseEntity<List<BoletimOcorrenciaResponseDTO>> getByDelegacia(@PathVariable Long delegaciaId) {
         List<BoletimOcorrenciaResponseDTO> response = boletimService.getBoletinsByDelegacia(delegaciaId)
                 .stream()
-                .map(BoletimOcorrenciaResponseDTO::fromEntity)
+                .map(BoletimOcorrenciaMapper::toResponseDTO)
                 .toList();
         return ResponseEntity.ok(response);
     }
@@ -54,9 +54,9 @@ public class BoletimOcorrenciaController {
     public ResponseEntity<BoletimOcorrenciaResponseDTO> create(
             @Valid @RequestBody BoletimOcorrenciaRequestDTO requestDTO) {
 
-        var boletim = boletimService.createBoletimOcorrencia(requestDTO.toEntity(), requestDTO.getPessoasEnvolvidas());
+        var boletim = boletimService.createBoletimOcorrencia(requestDTO);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(BoletimOcorrenciaResponseDTO.fromEntity(boletim));
+                .body(BoletimOcorrenciaMapper.toResponseDTO(boletim));
     }
 
     @Operation(summary = "Atualizar boletim de ocorrência")
@@ -65,8 +65,8 @@ public class BoletimOcorrenciaController {
             @PathVariable Long id,
             @Valid @RequestBody BoletimOcorrenciaRequestDTO requestDTO) {
 
-        var boletim = boletimService.updateBoletim(id, requestDTO.toEntity(), requestDTO.getPessoasEnvolvidas());
-        return ResponseEntity.ok(BoletimOcorrenciaResponseDTO.fromEntity(boletim));
+        var boletim = boletimService.updateBoletim(id, requestDTO);
+        return ResponseEntity.ok(BoletimOcorrenciaMapper.toResponseDTO(boletim));
     }
 
     @Operation(summary = "Excluir boletim de ocorrência")

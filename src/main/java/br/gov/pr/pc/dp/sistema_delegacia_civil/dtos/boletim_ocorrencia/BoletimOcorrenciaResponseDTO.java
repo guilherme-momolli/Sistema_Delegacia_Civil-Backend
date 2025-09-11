@@ -28,29 +28,4 @@ public class BoletimOcorrenciaResponseDTO {
     private Long delegaciaId;
     private List<PessoaEnvolvimentoResponseDTO> pessoasEnvolvidas = new ArrayList<>();
 
-    public static BoletimOcorrenciaResponseDTO fromEntity(BoletimOcorrencia entity) {
-        if (entity == null) return null;
-
-        BoletimOcorrenciaResponseDTO dto = new BoletimOcorrenciaResponseDTO();
-        dto.setId(entity.getId());
-        dto.setBoletim(entity.getBoletim());
-        dto.setNatureza(entity.getNatureza());
-        dto.setRepresentacao(entity.getRepresentacao());
-        dto.setDataOcorrencia(entity.getDataOcorrencia());
-        dto.setOrigemForcaPolicial(entity.getOrigemForcaPolicial());
-        dto.setDelegaciaId(entity.getDelegacia() != null ? entity.getDelegacia().getId() : null);
-
-        dto.setEndereco(entity.getEndereco() != null
-                ? EnderecoResponseDTO.fromEntity(entity.getEndereco())
-                : null);
-
-        if (entity.getPessoasEnvolvidas() != null) {
-            dto.setPessoasEnvolvidas(entity.getPessoasEnvolvidas()
-                    .stream()
-                    .map(PessoaEnvolvimentoResponseDTO::fromEntity)
-                    .collect(Collectors.toList()));
-        }
-
-        return dto;
-    }
 }

@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -24,27 +25,6 @@ public class BoletimOcorrenciaRequestDTO {
     private String representacao;
     private EnderecoRequestDTO endereco;
     private Long delegaciaId;
-    private List<PessoaEnvolvimentoRequestDTO> pessoasEnvolvidas;
-
-    public BoletimOcorrencia toEntity() {
-        BoletimOcorrencia boletim = new BoletimOcorrencia();
-        boletim.setOrigemForcaPolicial(this.origemForcaPolicial);
-        boletim.setDataOcorrencia(this.dataOcorrencia);
-        boletim.setBoletim(this.boletim);
-        boletim.setNatureza(this.natureza);
-        boletim.setRepresentacao(this.representacao);
-
-        if (this.endereco != null) {
-            boletim.setEndereco(this.endereco.toEntity());
-        }
-
-        if (this.delegaciaId != null) {
-            Delegacia delegacia = new Delegacia();
-            delegacia.setId(this.delegaciaId);
-            boletim.setDelegacia(delegacia);
-        }
-
-        return boletim;
-    }
-
+    private List<PessoaEnvolvimentoRequestDTO> pessoasEnvolvidas = new ArrayList<>();
+    
 }

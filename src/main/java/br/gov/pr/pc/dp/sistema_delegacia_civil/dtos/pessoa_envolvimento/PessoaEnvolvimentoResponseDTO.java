@@ -18,14 +18,4 @@ public class PessoaEnvolvimentoResponseDTO {
     private TipoEnvolvimento tipoEnvolvimento;
     private String observacao;
 
-    public static PessoaEnvolvimentoResponseDTO fromEntity(PessoaEnvolvimento entity) {
-        return new PessoaEnvolvimentoResponseDTO(
-                entity.getId(),
-                entity.getPessoa() != null ? entity.getPessoa().getId() : null,
-                entity.getBoletimOcorrencia() != null ? entity.getBoletimOcorrencia().getId() : null,
-                entity.getInqueritoPolicial() != null ? entity.getInqueritoPolicial().getId() : null,
-                entity.getTipoEnvolvimento(),
-                entity.getObservacao()
-        );
-    }
 }

@@ -20,22 +20,4 @@ public class DelegaciaResponseDTO {
     private String telefoneCelular;
     private EnderecoResponseDTO endereco;
 
-    public static DelegaciaResponseDTO fromEntity(Delegacia delegacia) {
-        if (delegacia == null) return null;
-
-        DelegaciaResponseDTO dto = new DelegaciaResponseDTO();
-        dto.setId(delegacia.getId());
-        dto.setImagemUrl(delegacia.getImagemUrl());
-        dto.setNome(delegacia.getNome());
-        dto.setEmail(delegacia.getEmail());
-        dto.setSecretaria(delegacia.getSecretaria());
-        dto.setTelefoneFixo(delegacia.getTelefoneFixo());
-        dto.setTelefoneCelular(delegacia.getTelefoneCelular());
-
-        if (delegacia.getEndereco() != null) {
-            dto.setEndereco(EnderecoResponseDTO.fromEntity(delegacia.getEndereco()));
-        }
-
-        return dto;
-    }
 }

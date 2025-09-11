@@ -37,29 +37,4 @@ public class PessoaResponseDTO {
     private String descricao;
     private EnderecoResponseDTO endereco;
 
-    public static PessoaResponseDTO fromEntity(Pessoa pessoa) {
-        PessoaResponseDTO dto = new PessoaResponseDTO();
-        dto.setId(pessoa.getId());
-        dto.setImagemUrl(pessoa.getImagemUrl());
-        dto.setNome(pessoa.getNome());
-        dto.setNomeSocial(pessoa.getNomeSocial());
-        dto.setDataNascimento(pessoa.getDataNascimento());
-        dto.setSexo(pessoa.getSexo());
-        dto.setCpf(pessoa.getCpf());
-        dto.setRg(pessoa.getRg());
-        dto.setTelefoneCelular(pessoa.getTelefoneCelular());
-        dto.setTelefoneFixo(pessoa.getTelefoneFixo());
-        dto.setEmail(pessoa.getEmail());
-        dto.setEstadoCivil(pessoa.getEstadoCivil());
-        dto.setProfissao(pessoa.getProfissao());
-        dto.setNacionalidade(pessoa.getNacionalidade());
-        dto.setNaturalidade(pessoa.getNaturalidade());
-        dto.setEtnia(pessoa.getEtnia());
-        dto.setSituacaoPessoa(pessoa.getSituacaoPessoa());
-        dto.setDescricao(pessoa.getDescricao());
-        if (pessoa.getEndereco() != null) {
-            dto.setEndereco(EnderecoResponseDTO.fromEntity(pessoa.getEndereco()));
-        }
-        return dto;
-    }
 }

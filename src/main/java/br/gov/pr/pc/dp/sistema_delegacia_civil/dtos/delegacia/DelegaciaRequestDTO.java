@@ -21,21 +21,5 @@ public class DelegaciaRequestDTO {
     private EnderecoRequestDTO endereco;
     private String senha;
 
-    public Delegacia toEntity() {
-        Delegacia delegacia = new Delegacia();
-        delegacia.setNome(this.nome);
-        delegacia.setEmail(this.email);
-        delegacia.setSecretaria(this.secretaria);
-        delegacia.setTelefoneFixo(this.telefoneFixo);
-        delegacia.setTelefoneCelular(this.telefoneCelular);
-        delegacia.setImagemUrl(this.imagemUrl);
-
-        if (this.endereco != null) {
-            Endereco enderecoEntity = this.endereco.toEntity(); // Converte EnderecoRequestDTO em Endereco
-            delegacia.setEndereco(enderecoEntity);
-        }
-
-        return delegacia;
-    }
 }
 

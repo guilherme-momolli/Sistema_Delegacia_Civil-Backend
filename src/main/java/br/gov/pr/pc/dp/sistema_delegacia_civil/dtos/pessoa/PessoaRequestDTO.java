@@ -37,31 +37,4 @@ public class PessoaRequestDTO {
     private String descricao;
     private EnderecoRequestDTO endereco;
 
-    public Pessoa toEntity() {
-        Pessoa pessoa = new Pessoa();
-        pessoa.setImagemUrl(this.imagemUrl);
-        pessoa.setNome(this.nome);
-        pessoa.setNomeSocial(this.nomeSocial);
-        pessoa.setDataNascimento(this.dataNascimento);
-        pessoa.setSexo(this.sexo);
-        pessoa.setCpf(this.cpf);
-        pessoa.setRg(this.rg);
-        pessoa.setTelefoneCelular(this.telefoneCelular);
-        pessoa.setTelefoneFixo(this.telefoneFixo);
-        pessoa.setEmail(this.email);
-        pessoa.setEstadoCivil(this.estadoCivil);
-        pessoa.setProfissao(this.profissao);
-        pessoa.setNacionalidade(this.nacionalidade);
-        pessoa.setNaturalidade(this.naturalidade);
-        pessoa.setEtnia(this.etnia);
-        pessoa.setSituacaoPessoa(this.situacaoPessoa);
-        pessoa.setDescricao(this.descricao);
-
-        if (this.endereco != null) {
-            Endereco enderecoEntity = this.endereco.toEntity();
-            pessoa.setEndereco(enderecoEntity);
-        }
-
-        return pessoa;
-    }
 }

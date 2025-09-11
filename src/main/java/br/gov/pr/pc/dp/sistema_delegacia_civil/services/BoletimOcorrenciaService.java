@@ -1,154 +1,91 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.services;
 
-import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.pessoa.PessoaEnvolvimentoRequestDTO;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.exceptions.boletim_ocorrencia.BoletimOcorrenciaNotFoundException;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.exceptions.delagacia.DelegaciaNotFoundException;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.exceptions.pessoa.PessoaNotFoundException;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.mappers.PessoaEnvolvimentoMapper;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.boletim_ocorrencia.BoletimOcorrenciaRequestDTO;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.helpers.EnderecoHelper;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.helpers.PessoaEnvolvimentoHelper;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.mappers.BoletimOcorrenciaMapper;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.*;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.repositorys.BoletimOcorrenciaRepository;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.repositorys.DelegaciaRepository;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.repositorys.EnderecoRepository;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.repositorys.PessoaRepository;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.validators.EntityValidator;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class BoletimOcorrenciaService {
 
-    private final BoletimOcorrenciaRepository boletimOcorrenciaRepository;
-    private final DelegaciaRepository delegaciaRepository;
-    private final EnderecoRepository enderecoRepository;
-    private final PessoaRepository pessoaRepository;
-    private final EnderecoService enderecoService;
+    private final BoletimOcorrenciaRepository boletimRepository;
+    private final EntityValidator entityValidator;
+    private final EnderecoHelper enderecoHelper;
+    private final PessoaEnvolvimentoHelper pessoaEnvolvimentoHelper;
 
     @Transactional
     public List<BoletimOcorrencia> findAll() {
-        return boletimOcorrenciaRepository.findAll();
+        return boletimRepository.findAll();
     }
 
     @Transactional
     public BoletimOcorrencia findById(Long id) {
-        return boletimOcorrenciaRepository.findById(id)
-                .orElseThrow(() -> new BoletimOcorrenciaNotFoundException(id));
+        entityValidator.validarBoletimExistente(id);
+        return boletimRepository.findById(id).orElseThrow();
     }
 
     @Transactional
     public List<BoletimOcorrencia> getBoletinsByDelegacia(Long delegaciaId) {
-        return boletimOcorrenciaRepository.findByDelegaciaId(delegaciaId);
+        entityValidator.validarDelegaciaExistente(delegaciaId);
+        return boletimRepository.findByDelegaciaId(delegaciaId);
     }
 
     @Transactional
-    public BoletimOcorrencia createBoletimOcorrencia(
-            BoletimOcorrencia boletim,
-            List<PessoaEnvolvimentoRequestDTO> pessoasDTO
-    ) {
-        // ✅ Valida a delegacia
-        delegaciaRepository.findById(boletim.getDelegacia().getId())
-                .orElseThrow(() -> new DelegaciaNotFoundException(boletim.getDelegacia().getId()));
+    public BoletimOcorrencia createBoletimOcorrencia(BoletimOcorrenciaRequestDTO requestDTO) {
 
-        // ✅ Valida ou cria o endereço via service
-        if (boletim.getEndereco() != null) {
-            Endereco endereco = boletim.getEndereco();
-            Endereco enderecoValido;
+        BoletimOcorrencia boletim = BoletimOcorrenciaMapper.toEntity(requestDTO);
+        entityValidator.validarDelegaciaExistente(boletim.getDelegacia().getId());
+        boletim.setEndereco(enderecoHelper.resolveEndereco(boletim.getEndereco()));
 
-            if (endereco.getId() == null) {
-                enderecoValido = enderecoService.createEndereco(endereco);
-            } else {
-                enderecoValido = enderecoService.getById(endereco.getId());
-            }
+        BoletimOcorrencia salvo = boletimRepository.save(boletim);
 
-            boletim.setEndereco(enderecoValido);
-        }
+        List<PessoaEnvolvimento> envolvimentos =
+                pessoaEnvolvimentoHelper.mapearPessoas(requestDTO.getPessoasEnvolvidas(), salvo);
 
-        BoletimOcorrencia salvo = boletimOcorrenciaRepository.save(boletim);
+        salvo.setPessoasEnvolvidas(new ArrayList<>(envolvimentos));
 
-        if (pessoasDTO != null && !pessoasDTO.isEmpty()) {
-            List<PessoaEnvolvimento> envolvimentos = pessoasDTO.stream()
-                    .map(dto -> {
-                        Pessoa pessoa = pessoaRepository.findById(dto.getPessoaId())
-                                .orElseThrow(() -> new PessoaNotFoundException(dto.getPessoaId()));
-                        return PessoaEnvolvimentoMapper.toEntity(dto, pessoa, salvo);
-                    })
-                    .toList();
-
-            salvo.getPessoasEnvolvidas().addAll(envolvimentos);
-        }
-
-        return boletimOcorrenciaRepository.save(salvo);
+        return boletimRepository.save(salvo);
     }
-
 
     @Transactional
-    public BoletimOcorrencia updateBoletim(
-            Long id,
-            BoletimOcorrencia boletim,
-            List<PessoaEnvolvimentoRequestDTO> pessoasDTO
-    ) {
-        BoletimOcorrencia existing = boletimOcorrenciaRepository.findById(id)
-                .orElseThrow(() -> new BoletimOcorrenciaNotFoundException(id));
+    public BoletimOcorrencia updateBoletim(Long id, BoletimOcorrenciaRequestDTO requestDTO) {
 
-        if (boletim.getDelegacia() != null && boletim.getDelegacia().getId() != null) {
-            delegaciaRepository.findById(boletim.getDelegacia().getId())
-                    .orElseThrow(() -> new DelegaciaNotFoundException(boletim.getDelegacia().getId()));
-            existing.setDelegacia(boletim.getDelegacia());
+        BoletimOcorrencia existing = findById(id);
+        BoletimOcorrencia boletimAtualizado = BoletimOcorrenciaMapper.toEntity(requestDTO);
+
+        if (boletimAtualizado.getDelegacia() != null && boletimAtualizado.getDelegacia().getId() != null) {
+            entityValidator.validarDelegaciaExistente(boletimAtualizado.getDelegacia().getId());
+            existing.setDelegacia(boletimAtualizado.getDelegacia());
         }
 
-        existing.setOrigemForcaPolicial(boletim.getOrigemForcaPolicial());
-        existing.setDataOcorrencia(boletim.getDataOcorrencia());
-        existing.setBoletim(boletim.getBoletim());
-        existing.setNatureza(boletim.getNatureza());
-        existing.setRepresentacao(boletim.getRepresentacao());
+        existing.setOrigemForcaPolicial(boletimAtualizado.getOrigemForcaPolicial());
+        existing.setDataOcorrencia(boletimAtualizado.getDataOcorrencia());
+        existing.setBoletim(boletimAtualizado.getBoletim());
+        existing.setNatureza(boletimAtualizado.getNatureza());
+        existing.setRepresentacao(boletimAtualizado.getRepresentacao());
 
-        if (boletim.getEndereco() != null) {
-            Endereco endereco = boletim.getEndereco();
-            Endereco enderecoValido;
-            if (endereco.getId() == null) {
-                enderecoValido = enderecoService.createEndereco(endereco);
-            } else {
-                enderecoValido = enderecoService.getById(endereco.getId());
-            }
-            existing.setEndereco(enderecoValido);
-        }
+        existing.setEndereco(enderecoHelper.resolveEndereco(boletimAtualizado.getEndereco()));
 
-        existing.getPessoasEnvolvidas().clear();
-        if (pessoasDTO != null && !pessoasDTO.isEmpty()) {
-            List<PessoaEnvolvimento> envolvimentos = pessoasDTO.stream()
-                    .map(dto -> {
-                        Pessoa pessoa = pessoaRepository.findById(dto.getPessoaId())
-                                .orElseThrow(() -> new PessoaNotFoundException(dto.getPessoaId()));
-                        return PessoaEnvolvimentoMapper.toEntity(dto, pessoa, existing);
-                    })
-                    .toList();
-            existing.getPessoasEnvolvidas().addAll(envolvimentos);
-        }
+        List<PessoaEnvolvimento> envolvimentos =
+                pessoaEnvolvimentoHelper.mapearPessoas(requestDTO.getPessoasEnvolvidas(), existing);
+        existing.setPessoasEnvolvidas(new ArrayList<>(envolvimentos));
 
-        return boletimOcorrenciaRepository.save(existing);
+        return boletimRepository.save(existing);
     }
-
-
 
     @Transactional
     public void delete(Long id) {
-        if (!boletimOcorrenciaRepository.existsById(id)) {
-            throw new BoletimOcorrenciaNotFoundException(id);
-        }
-        boletimOcorrenciaRepository.deleteById(id);
-    }
-
-    private List<PessoaEnvolvimento> mapearPessoas(
-            List<PessoaEnvolvimentoRequestDTO> pessoasDTO,
-            BoletimOcorrencia boletim
-    ) {
-        return pessoasDTO.stream()
-                .map(dto -> {
-                    Pessoa pessoa = pessoaRepository.findById(dto.getPessoaId())
-                            .orElseThrow(() -> new PessoaNotFoundException(dto.getPessoaId()));
-                    return PessoaEnvolvimentoMapper.toEntity(dto, pessoa, boletim);
-                })
-                .toList();
+        entityValidator.validarBoletimExistente(id);
+        boletimRepository.deleteById(id);
     }
 }

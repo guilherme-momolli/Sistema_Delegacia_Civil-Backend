@@ -21,31 +21,4 @@ public class PessoaEnvolvimentoRequestDTO {
     private TipoEnvolvimento tipoEnvolvimento;
     private String observacao;
 
-    public PessoaEnvolvimento toEntity() {
-        PessoaEnvolvimento entity = new PessoaEnvolvimento();
-
-        entity.setId(entity.getId());
-        if (this.pessoaId != null) {
-            Pessoa pessoa = new Pessoa();
-            pessoa.setId(this.pessoaId);
-            entity.setPessoa(pessoa);
-        }
-
-        if (this.boletimId != null) {
-            BoletimOcorrencia boletim = new BoletimOcorrencia();
-            boletim.setId(this.boletimId);
-            entity.setBoletimOcorrencia(boletim);
-        }
-
-        if (this.inqueritoId != null) {
-            InqueritoPolicial inquerito = new InqueritoPolicial();
-            inquerito.setId(this.inqueritoId);
-            entity.setInqueritoPolicial(inquerito);
-        }
-
-        entity.setTipoEnvolvimento(this.tipoEnvolvimento);
-        entity.setObservacao(this.observacao);
-
-        return entity;
-    }
 }

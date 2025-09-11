@@ -2,7 +2,7 @@ package br.gov.pr.pc.dp.sistema_delegacia_civil.controllers;
 
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.pessoa.PessoaFiltroDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.pessoa.PessoaResponseDTO;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.mapper.PessoaMapper;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.mappers.PessoaMapper;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Pessoa;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.services.PessoaService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,12 +12,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.net.URI;
 import java.util.List;
@@ -29,6 +32,7 @@ import java.util.List;
 @Tag(name = "Pessoa", description = "Operações relacionadas aos pessoas cadastrados")
 public class PessoaController {
 
+    @Autowired
     private final PessoaService pessoaService;
     private final PessoaMapper pessoaMapper;
 
@@ -55,13 +59,18 @@ public class PessoaController {
     @GetMapping("/search")
     public ResponseEntity<Page<PessoaResponseDTO>> pesquisarPessoas(
             PessoaFiltroDTO filtro,
-            Pageable pageable
+            @PageableDefault(sort = "nome", direction = Sort.Direction.ASC) Pageable pageable
     ) {
-        Page<Pessoa> pessoas = pessoaService.buscarComFiltro(filtro, pageable);
-        Page<PessoaResponseDTO> resultados = pessoas.map(pessoaMapper::toResponseDTO);
-        return ResponseEntity.ok(resultados);
-    }
+        List<String> camposValidos = List.of("nome", "cpf", "rg", "sexo", "situacaoPessoa");
+        if (pageable.getSort().stream().anyMatch(order -> !camposValidos.contains(order.getProperty()))) {
+            pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("nome").ascending());
+        }
 
+        Page<Pessoa> pessoas = pessoaService.buscarComFiltro(filtro, pageable);
+        Page<PessoaResponseDTO> resultados = pessoas.map(PessoaMapper::toResponseDTO);
+        return ResponseEntity.ok(resultados);
+
+    }
 
     @Operation(summary = "Cadastrar nova pessoa")
     @ApiResponses(value = {

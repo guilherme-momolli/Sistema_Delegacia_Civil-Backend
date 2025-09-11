@@ -1,99 +1,95 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.services;
 
-import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.pessoa.PessoaEnvolvimentoDTO;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.inquerito_policial.InqueritoPolicialRequestDTO;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.helpers.EnderecoHelper;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.helpers.PessoaEnvolvimentoHelper;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.mappers.InqueritoPolicialMapper;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Delegacia;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.InqueritoPolicial;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Pessoa;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.PessoaEnvolvimento;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.mapper.PessoaEnvolvimentoMapper;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.repositorys.InqueritoPolicialRepository;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.repositorys.PessoaRepository;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.validators.EntityValidator;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class InqueritoPolicialService {
 
-    @Autowired
     private final InqueritoPolicialRepository inqueritoRepository;
-    @Autowired
-    private final PessoaRepository pessoaRepository;
-    @Autowired
-    private PessoaEnvolvimentoService pessoaEnvolvimentoService;
+    private final EntityValidator entityValidator;
+    private final PessoaEnvolvimentoHelper pessoaEnvolvimentoHelper;
 
+    @Transactional
     public List<InqueritoPolicial> findAll() {
         return inqueritoRepository.findAll();
     }
 
-    public Optional<InqueritoPolicial> findById(Long id) {
-        return inqueritoRepository.findById(id);
+    @Transactional
+    public InqueritoPolicial findById(Long id) {
+        entityValidator.validarInqueritoPolicalExistente(id);
+        return inqueritoRepository.findById(id).orElseThrow();
     }
 
+    @Transactional
     public List<InqueritoPolicial> getInqueritosByDelegacia(Long delegaciaId) {
+        entityValidator.validarDelegaciaExistente(delegaciaId);
         return inqueritoRepository.findByDelegaciaId(delegaciaId);
     }
 
     @Transactional
-    public InqueritoPolicial createInqueritoPolicial(InqueritoPolicial inquerito, List<PessoaEnvolvimentoDTO> pessoasDTO) {
-        if (pessoasDTO != null) {
-            for (PessoaEnvolvimentoDTO dto : pessoasDTO) {
-                Pessoa pessoa = pessoaRepository.findById(dto.getPessoaId())
-                        .orElseThrow(() -> new RuntimeException("Pessoa não encontrada"));
+    public InqueritoPolicial createInqueritoPolicial(InqueritoPolicialRequestDTO requestDTO) {
 
-                PessoaEnvolvimento envolvimento = PessoaEnvolvimentoMapper.toEntity(dto, pessoa, inquerito);
+        entityValidator.validarDelegaciaExistente(requestDTO.getDelegaciaId());
 
-                inquerito.getPessoasEnvolvidas().add(envolvimento);
-            }
-        }
+        Delegacia delegacia = new Delegacia();
+        delegacia.setId(requestDTO.getDelegaciaId());
+        InqueritoPolicial inquerito = InqueritoPolicialMapper.toEntity(requestDTO, delegacia);
 
-        return inqueritoRepository.save(inquerito);
+        InqueritoPolicial salvo = inqueritoRepository.save(inquerito);
+
+        List<PessoaEnvolvimento> envolvimentos =
+                pessoaEnvolvimentoHelper.mapearPessoas(requestDTO.getPessoasEnvolvidas(), salvo);
+        salvo.getPessoasEnvolvidas().addAll(envolvimentos);
+
+        return inqueritoRepository.save(salvo);
     }
-
 
     @Transactional
-    public InqueritoPolicial updateInqueritoPolicial(Long id, InqueritoPolicial inquerito, List<PessoaEnvolvimentoDTO> pessoasDTO) {
-        InqueritoPolicial existente = inqueritoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Inquérito não encontrado"));
+    public InqueritoPolicial updateInqueritoPolicial(Long id, InqueritoPolicialRequestDTO requestDTO) {
 
-        existente.setNumeroJustica(inquerito.getNumeroJustica());
-        existente.setOrdemIp(inquerito.getOrdemIp());
-        existente.setData(inquerito.getData());
-        existente.setPeca(inquerito.getPeca());
-        existente.setSituacaoInquerito(inquerito.getSituacaoInquerito());
-        existente.setOrigemForcaPolicial(inquerito.getOrigemForcaPolicial());
-        existente.setNaturezaDoDelito(inquerito.getNaturezaDoDelito());
-        existente.setObservacao(inquerito.getObservacao());
-        existente.setDelegacia(inquerito.getDelegacia());
+        InqueritoPolicial existente = findById(id);
+
+        if (requestDTO.getDelegaciaId() != null) {
+            entityValidator.validarDelegaciaExistente(requestDTO.getDelegaciaId());
+            Delegacia delegacia = new Delegacia();
+            delegacia.setId(requestDTO.getDelegaciaId());
+            existente.setDelegacia(delegacia);
+        }
+
+        existente.setNumeroJustica(requestDTO.getNumeroJustica());
+        existente.setOrdemIp(requestDTO.getOrdemIp());
+        existente.setData(requestDTO.getData());
+        existente.setPeca(requestDTO.getPeca());
+        existente.setSituacaoInquerito(requestDTO.getSituacaoInquerito());
+        existente.setOrigemForcaPolicial(requestDTO.getOrigemForcaPolicial());
+        existente.setNaturezaDoDelito(requestDTO.getNaturezaDoDelito());
+        existente.setObservacao(requestDTO.getObservacao());
 
         existente.getPessoasEnvolvidas().clear();
+        List<PessoaEnvolvimento> envolvimentos =
+                pessoaEnvolvimentoHelper.mapearPessoas(requestDTO.getPessoasEnvolvidas(), existente);
+        existente.getPessoasEnvolvidas().addAll(envolvimentos);
 
-        InqueritoPolicial atualizado = inqueritoRepository.save(existente);
-
-        if (pessoasDTO != null) {
-            for (PessoaEnvolvimentoDTO dto : pessoasDTO) {
-                Pessoa pessoa = pessoaRepository.findById(dto.getPessoaId())
-                        .orElseThrow(() -> new RuntimeException("Pessoa não encontrada"));
-
-                PessoaEnvolvimento envolvimento = PessoaEnvolvimentoMapper.toEntity(dto, pessoa, atualizado);
-
-                atualizado.getPessoasEnvolvidas().add(envolvimento);
-            }
-        }
-
-        return inqueritoRepository.save(atualizado);
+        return inqueritoRepository.save(existente);
     }
 
-
-
+    @Transactional
     public void delete(Long id) {
-        if (!inqueritoRepository.existsById(id)) {
-            throw new RuntimeException("Inquérito não encontrado para exclusão");
-        }
+        entityValidator.validarInqueritoPolicalExistente(id);
         inqueritoRepository.deleteById(id);
     }
 }

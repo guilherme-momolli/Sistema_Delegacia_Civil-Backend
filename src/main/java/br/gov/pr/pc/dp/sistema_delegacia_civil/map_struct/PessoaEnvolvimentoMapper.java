@@ -1,6 +1,6 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.map_struct;
 
-import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.pessoa.PessoaEnvolvimentoDTO;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.pessoa_envolvimento.PessoaEnvolvimentoRequestDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.PessoaEnvolvimento;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -14,10 +14,10 @@ public interface PessoaEnvolvimentoMapper {
     @Mapping(source = "pessoa.id", target = "pessoaId")
     @Mapping(source = "inqueritoPolicial.id", target = "inqueritoId")
     @Mapping(source = "boletimOcorrencia.id", target = "boletimId")
-    PessoaEnvolvimentoDTO toDTO(PessoaEnvolvimento entity);
+    PessoaEnvolvimentoRequestDTO toDTO(PessoaEnvolvimento entity);
 
     @Mapping(source = "pessoaId", target = "pessoa.id")
     @Mapping(source = "inqueritoId", target = "inqueritoPolicial.id")
     @Mapping(source = "boletimId", target = "boletimOcorrencia.id")
-    PessoaEnvolvimento toEntity(PessoaEnvolvimentoDTO dto);
+    PessoaEnvolvimento toEntity(PessoaEnvolvimentoRequestDTO dto);
 }

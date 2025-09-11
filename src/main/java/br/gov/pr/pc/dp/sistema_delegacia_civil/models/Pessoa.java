@@ -1,5 +1,6 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.models;
 
+import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.pessoa.EstadoCivil;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.pessoa.Etnia;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.pessoa.Genero;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.pessoa.SituacaoPessoa;
@@ -50,7 +51,8 @@ public class Pessoa {
     private String email;
 
     @Column(name = "estado_civil")
-    private String estadoCivil;
+    @Enumerated(EnumType.STRING)
+    private EstadoCivil estadoCivil;
 
     private String profissao;
 

@@ -1,12 +1,11 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.services;
 
-import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.pessoa.PessoaEnvolvimentoDTO;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.pessoa_envolvimento.PessoaEnvolvimentoRequestDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.PessoaEnvolvimento;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.repositorys.BoletimOcorrenciaRepository;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.repositorys.InqueritoPolicialRepository;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.repositorys.PessoaEnvolvimentoRepository;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.repositorys.PessoaRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,22 +22,22 @@ public class PessoaEnvolvimentoService {
     private final PessoaEnvolvimentoRepository pessoaEnvolvimentoRepository;
 
 
-    public List<PessoaEnvolvimentoDTO> listarPorInquerito(Long inqueritoId) {
+    public List<PessoaEnvolvimentoRequestDTO> listarPorInquerito(Long inqueritoId) {
         return pessoaEnvolvimentoRepository.findByInqueritoPolicialId(inqueritoId)
                 .stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }
 
-    public List<PessoaEnvolvimentoDTO> listarPorBoletim(Long boletimId) {
+    public List<PessoaEnvolvimentoRequestDTO> listarPorBoletim(Long boletimId) {
         return pessoaEnvolvimentoRepository.findByBoletimOcorrenciaId(boletimId)
                 .stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }
 
-    private PessoaEnvolvimentoDTO toDTO(PessoaEnvolvimento envolvimento) {
-        return new PessoaEnvolvimentoDTO(
+    private PessoaEnvolvimentoRequestDTO toDTO(PessoaEnvolvimento envolvimento) {
+        return new PessoaEnvolvimentoRequestDTO(
                 envolvimento.getId(),
                 envolvimento.getPessoa().getId(),
                 envolvimento.getBoletimOcorrencia() != null ? envolvimento.getBoletimOcorrencia().getId() : null,

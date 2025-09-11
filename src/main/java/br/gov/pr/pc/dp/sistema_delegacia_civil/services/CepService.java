@@ -1,6 +1,6 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.services;
 
-import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.ViaCepResponseDTO;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.endereco.ViaCepResponseDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;

@@ -1,6 +1,6 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.controllers;
 
-import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.ViaCepResponseDTO;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.endereco.ViaCepResponseDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.services.CepService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

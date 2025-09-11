@@ -20,16 +20,4 @@ public class EnderecoRequestDTO {
     private Pais pais;
     private String cep;
 
-    public Endereco toEntity(){
-        Endereco entity = new Endereco();
-        entity.setCep(this.cep);
-        entity.setNumero(this.numero);
-        entity.setLogradouro(this.logradouro);
-        entity.setBairro(this.bairro);
-        entity.setMunicipio(this.municipio);
-        entity.setUf(this.uf);
-        entity.setPais(this.pais);
-        return entity;
-    }
-
 }

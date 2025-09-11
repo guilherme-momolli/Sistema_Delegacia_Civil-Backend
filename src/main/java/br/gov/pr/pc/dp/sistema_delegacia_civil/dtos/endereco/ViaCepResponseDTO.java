@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ViaCepResponseDTO {
+
     private String cep;
     private String logradouro;
     private String complemento;
@@ -18,4 +19,5 @@ public class ViaCepResponseDTO {
     private String gia;
     private String ddd;
     private String siafi;
+
 }

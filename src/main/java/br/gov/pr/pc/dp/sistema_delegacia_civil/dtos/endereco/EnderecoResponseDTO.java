@@ -25,18 +25,4 @@ public class EnderecoResponseDTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public static EnderecoResponseDTO fromEntity(Endereco endereco) {
-        return new EnderecoResponseDTO(
-                endereco.getId(),
-                endereco.getNumero(),
-                endereco.getLogradouro(),
-                endereco.getBairro(),
-                endereco.getMunicipio(),
-                endereco.getUf(),
-                endereco.getPais(),
-                endereco.getCep(),
-                endereco.getCreatedAt(),
-                endereco.getUpdatedAt()
-        );
-    }
 }

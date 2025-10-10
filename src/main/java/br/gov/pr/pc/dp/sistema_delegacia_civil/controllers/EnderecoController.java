@@ -1,5 +1,7 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.controllers;
 
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.endereco.EnderecoRequestDTO;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.endereco.EnderecoResponseDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Endereco;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.services.EnderecoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,66 +28,48 @@ public class EnderecoController {
 
     @Operation(summary = "Listar todos os endereços")
     @ApiResponse(responseCode = "200", description = "Lista de endereços retornada com sucesso",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = Endereco.class)))
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = EnderecoResponseDTO.class)))
     @GetMapping("/list")
-    public ResponseEntity<List<Endereco>> getAllEnderecos() {
-        try {
-            List<Endereco> enderecos = enderecoService.listEndereco();
-            return ResponseEntity.ok(enderecos);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+    public ResponseEntity<List<EnderecoResponseDTO>> getAllEnderecos() {
+        return ResponseEntity.ok(enderecoService.listEndereco());
     }
 
     @Operation(summary = "Buscar endereço por ID")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Endereço encontrado",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Endereco.class))),
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = EnderecoResponseDTO.class))),
             @ApiResponse(responseCode = "404", description = "Endereço não encontrado")
     })
     @GetMapping("/list/{id}")
-    public ResponseEntity<Endereco> getEnderecoById(@PathVariable Long id) {
-        try {
-            Endereco endereco = enderecoService.getById(id);
-            return ResponseEntity.ok(endereco);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+    public ResponseEntity<EnderecoResponseDTO> getEnderecoById(@PathVariable Long id) {
+        return ResponseEntity.ok(enderecoService.getById(id));
     }
 
     @Operation(summary = "Criar novo endereço")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Endereço criado com sucesso",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Endereco.class))),
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = EnderecoResponseDTO.class))),
             @ApiResponse(responseCode = "400", description = "Dados inválidos")
     })
     @PostMapping("/create")
-    public ResponseEntity<Endereco> createEndereco(
-            @org.springframework.web.bind.annotation.RequestBody Endereco endereco) {
-        try {
-            Endereco novoEndereco = enderecoService.createEndereco(endereco);
-            return ResponseEntity.status(HttpStatus.CREATED).body(novoEndereco);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+    public ResponseEntity<EnderecoResponseDTO> createEndereco(
+            @RequestBody EnderecoRequestDTO dto) {
+        EnderecoResponseDTO novoEndereco = enderecoService.createEndereco(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(novoEndereco);
     }
 
     @Operation(summary = "Atualizar endereço por ID")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Endereço atualizado com sucesso",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Endereco.class))),
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = EnderecoResponseDTO.class))),
             @ApiResponse(responseCode = "400", description = "Requisição inválida")
     })
     @PutMapping("/update/{id}")
-    public ResponseEntity<Endereco> updateEndereco(
+    public ResponseEntity<EnderecoResponseDTO> updateEndereco(
             @PathVariable Long id,
-            @org.springframework.web.bind.annotation.RequestBody Endereco endereco) {
-        try {
-            Endereco enderecoAtualizado = enderecoService.updateEndereco(id, endereco);
-            return ResponseEntity.ok(enderecoAtualizado);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+            @RequestBody EnderecoRequestDTO dto) {
+        EnderecoResponseDTO enderecoAtualizado = enderecoService.updateEndereco(id, dto);
+        return ResponseEntity.ok(enderecoAtualizado);
     }
 
     @Operation(summary = "Excluir endereço por ID")
@@ -95,11 +79,7 @@ public class EnderecoController {
     })
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteEndereco(@PathVariable Long id) {
-        try {
-            enderecoService.deleteEndereco(id);
-            return ResponseEntity.noContent().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        enderecoService.deleteEndereco(id);
+        return ResponseEntity.noContent().build();
     }
 }

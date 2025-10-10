@@ -114,11 +114,10 @@ public class FileController {
                     @ApiResponse(responseCode = "500", description = "Erro ao carregar o arquivo")
             }
     )
-
     @GetMapping("/getFile/Imagens/**")
     public ResponseEntity<byte[]> getImagem(HttpServletRequest request) {
         try {
-            // Extrai o caminho após "/getFile/Imagens/"
+
             String filePath = request.getRequestURI().split("/getFile/Imagens/")[1];
 
             String subFolder = filePath.substring(0, filePath.lastIndexOf('/'));
@@ -139,5 +138,5 @@ public class FileController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-    }
+    }       
 }

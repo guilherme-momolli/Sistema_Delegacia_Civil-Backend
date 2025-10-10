@@ -41,11 +41,13 @@ public class BoletimOcorrencia {
 
     @OneToMany(mappedBy = "boletimOcorrencia", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("boletim-pessoas")
+    @lombok.ToString.Exclude
     private List<PessoaEnvolvimento> pessoasEnvolvidas = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "delegacia_id", nullable = false)
-    @JsonIgnoreProperties("BoletimOcorrencia")
+    @JsonIgnoreProperties("boletins")
+    @lombok.ToString.Exclude
     private Delegacia delegacia;
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP WITH TIME ZONE", updatable = false)

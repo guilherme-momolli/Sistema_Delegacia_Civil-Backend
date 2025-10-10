@@ -1,0 +1,47 @@
+//package br.gov.pr.pc.dp.sistema_delegacia_civil.mappers;
+//
+//import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.objeto.ObjetoRequestDTO;
+//import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.objeto.ObjetoResponseDTO;
+//import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Bem;
+//import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Objeto;
+//import org.springframework.stereotype.Component;
+//
+//@Component
+//public class ObjetoMapper {
+//
+//    public static Objeto toEntity(ObjetoRequestDTO dto, Bem bem) {
+//        if (dto == null) return null;
+//
+//        Objeto objeto = new Objeto();
+//        objeto.setId(dto.getId());
+//        objeto.setBem(bem);
+//        objeto.setTipoObjeto(dto.getTipoObjeto());
+//        objeto.setNumeroSerie(dto.getNumeroSerie());
+//        objeto.setCor(dto.getCor());
+//        objeto.setMaterial(dto.getMaterial());
+//        objeto.setDimensoes(dto.getDimensoes());
+//        objeto.setEstadoConservacao(dto.getEstadoConservacao());
+//        objeto.setSituacaoObjeto(dto.getSituacaoObjeto());
+//
+//        return objeto;
+//    }
+//
+//    public static ObjetoResponseDTO toResponseDTO(Objeto entity) {
+//        if (entity == null) return null;
+//
+//        ObjetoResponseDTO dto = new ObjetoResponseDTO();
+//        dto.setId(entity.getId());
+//        dto.setBemId(entity.getBem() != null ? entity.getBem().getId() : null);
+//        dto.setTipoObjeto(entity.getTipoObjeto());
+//        dto.setNumeroSerie(entity.getNumeroSerie());
+//        dto.setCor(entity.getCor());
+//        dto.setMaterial(entity.getMaterial());
+//        dto.setDimensoes(entity.getDimensoes());
+//        dto.setEstadoConservacao(entity.getEstadoConservacao());
+//        dto.setSituacaoObjeto(entity.getSituacaoObjeto());
+//        dto.setCreatedAt(entity.getCreatedAt());
+//        dto.setUpdatedAt(entity.getUpdatedAt());
+//
+//        return dto;
+//    }
+//}

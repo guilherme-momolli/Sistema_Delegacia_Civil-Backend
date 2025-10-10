@@ -8,6 +8,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.util.List;
 
 
 @Data
@@ -20,30 +22,27 @@ public class Bem {
     private Long id;
 
     @Column(name = "tipo_bem", nullable = false, length = 20)
-    @Enumerated(value = EnumType.STRING)
     private TipoBem tipoBem;
 
     @Column(name = "imagem_url", length = 255)
     private String imagemUrl;
 
-    @Column(length = 255)
     private String marca;
 
-    @Column(length = 255)
     private String modelo;
 
     @Column(name = "valor_estimado", precision = 15, scale = 2)
     private BigDecimal valorEstimado;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pessoa_id")
     private Pessoa pessoa;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "delegacia_id")
     private Delegacia delegacia;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "instituicao_id")
     private Instituicao instituicao;
 
@@ -65,14 +64,27 @@ public class Bem {
     @Column(columnDefinition = "TEXT")
     private String descricao;
 
-    @Column(nullable = false)
-    private Boolean ativo = true;
-
-    @Column(name = "created_at", columnDefinition = "TIMESTAMP WITH TIME ZONE", updatable = false)
-    @CreationTimestamp
+    @Column(name = "created_at", columnDefinition = "TIMESTAMP WITH TIME ZONE")
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", columnDefinition = "TIMESTAMP WITH TIME ZONE", updatable = false)
-    @UpdateTimestamp
+    @Column(name = "updated_at", columnDefinition = "TIMESTAMP WITH TIME ZONE")
     private LocalDateTime updatedAt;
+
+    @OneToOne(mappedBy = "bem", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private Objeto objeto;
+
+    @OneToOne(mappedBy = "bem", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private Veiculo veiculo;
+
+    @OneToOne(mappedBy = "bem", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private Droga droga;
+
+    @OneToOne(mappedBy = "bem", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private Arma arma;
+
+    @OneToMany(mappedBy = "bem", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<BemEnvolvimento> bemEnvolvimentos;
+
+    @OneToMany(mappedBy = "bem", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<BemMovimentacao> bemMovimentacoes;
 }

@@ -2,10 +2,10 @@ package br.gov.pr.pc.dp.sistema_delegacia_civil.services;
 
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.pessoa_envolvimento.PessoaEnvolvimentoRequestDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.PessoaEnvolvimento;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.repositorys.BoletimOcorrenciaRepository;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.repositorys.InqueritoPolicialRepository;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.repositorys.PessoaEnvolvimentoRepository;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.repositorys.PessoaRepository;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.repositories.BoletimOcorrenciaRepository;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.repositories.InqueritoPolicialRepository;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.repositories.PessoaEnvolvimentoRepository;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.repositories.PessoaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -38,7 +38,6 @@ public class PessoaEnvolvimentoService {
 
     private PessoaEnvolvimentoRequestDTO toDTO(PessoaEnvolvimento envolvimento) {
         return new PessoaEnvolvimentoRequestDTO(
-                envolvimento.getId(),
                 envolvimento.getPessoa().getId(),
                 envolvimento.getBoletimOcorrencia() != null ? envolvimento.getBoletimOcorrencia().getId() : null,
                 envolvimento.getInqueritoPolicial() != null ? envolvimento.getInqueritoPolicial().getId() : null,

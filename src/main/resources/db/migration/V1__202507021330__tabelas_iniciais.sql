@@ -118,7 +118,7 @@ CREATE TABLE inquerito_policial (
 
 CREATE TABLE bem (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    tipo_bem VARCHAR(20) NOT NULL,                          -- Ex: 'ARMA', 'DROGA', 'VEICULO', 'OBJETO'
+    tipo_bem VARCHAR(20) NOT NULL,
     imagem_url VARCHAR(255),
     marca VARCHAR(255),
     modelo VARCHAR(255),
@@ -126,8 +126,8 @@ CREATE TABLE bem (
     pessoa_id BIGINT,
     delegacia_id BIGINT,
     instituicao_id BIGINT,
-    situacao_bem VARCHAR(50),                               -- Ex: 'APREENDIDO', 'ROUBADO', 'FURTADO'
-    origem VARCHAR(100),                                    -- Ex: 'PATRIMONIAL', 'APREENSÃO'
+    situacao_bem VARCHAR(50),
+    origem VARCHAR(100),
     numero_lacre VARCHAR(50),
     local_bem varchar(50),
     observacao TEXT,
@@ -145,7 +145,7 @@ CREATE TABLE bem_envolvimento (
     bem_id BIGINT NOT NULL,
     boletim_id BIGINT,
     inquerito_id BIGINT,
-    tipo_envolvimento VARCHAR(50),                          -- Ex: 'APREENDIDO', 'FURTADO', 'RECUPERADO'
+    tipo_envolvimento VARCHAR(50),
     data_envolvimento TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_bem_envolvimento_bem FOREIGN KEY (bem_id) REFERENCES bem(id),
     CONSTRAINT fk_bem_envolvimento_boletim FOREIGN KEY (boletim_id) REFERENCES boletim_ocorrencia(id),

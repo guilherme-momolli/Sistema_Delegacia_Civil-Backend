@@ -1,13 +1,17 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.services;
 
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.endereco.EnderecoRequestDTO;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.endereco.EnderecoResponseDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.exceptions.file_storage.ResourceNotFoundException;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.mappers.EnderecoMapper;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Endereco;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.repositorys.EnderecoRepository;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.repositories.EnderecoRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -15,33 +19,40 @@ public class EnderecoService {
 
     private final EnderecoRepository enderecoRepository;
 
-    public List<Endereco> listEndereco() {
-        return enderecoRepository.findAll();
+    public List<EnderecoResponseDTO> listEndereco() {
+        return enderecoRepository.findAll()
+                .stream()
+                .map(EnderecoMapper::toResponseDTO)
+                .collect(Collectors.toList());
     }
 
-    public Endereco getById(Long id) {
-        return enderecoRepository.findById(id)
+    public EnderecoResponseDTO getById(Long id) {
+        Endereco endereco = enderecoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Endereço não encontrado"));
+        return EnderecoMapper.toResponseDTO(endereco);
     }
 
-    public Endereco createEndereco(Endereco endereco) {
-        return enderecoRepository.save(endereco);
+    public EnderecoResponseDTO createEndereco(EnderecoRequestDTO dto) {
+        Endereco endereco = EnderecoMapper.toEntity(dto);
+        Endereco salvo = enderecoRepository.save(endereco);
+        return EnderecoMapper.toResponseDTO(salvo);
     }
 
     @Transactional
-    public Endereco updateEndereco(Long id, Endereco endereco) {
-        Endereco enderecoParaAtualizar = enderecoRepository.findById(id)
+    public EnderecoResponseDTO updateEndereco(Long id, EnderecoRequestDTO dto) {
+        Endereco endereco = enderecoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Endereço não encontrado"));
 
-        enderecoParaAtualizar.setLogradouro(endereco.getLogradouro());
-        enderecoParaAtualizar.setNumero(endereco.getNumero());
-        enderecoParaAtualizar.setBairro(endereco.getBairro());
-        enderecoParaAtualizar.setMunicipio(endereco.getMunicipio());
-        enderecoParaAtualizar.setCep(endereco.getCep());
-        enderecoParaAtualizar.setUf(endereco.getUf());
-        enderecoParaAtualizar.setPais(endereco.getPais());
+        endereco.setLogradouro(dto.getLogradouro());
+        endereco.setNumero(dto.getNumero());
+        endereco.setBairro(dto.getBairro());
+        endereco.setMunicipio(dto.getMunicipio());
+        endereco.setCep(dto.getCep());
+        endereco.setUf(dto.getUf());
+        endereco.setPais(dto.getPais());
 
-        return enderecoRepository.save(enderecoParaAtualizar);
+        Endereco atualizado = enderecoRepository.save(endereco);
+        return EnderecoMapper.toResponseDTO(atualizado);
     }
 
     public void deleteEndereco(Long id) {

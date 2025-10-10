@@ -26,22 +26,18 @@ public class PessoaSpecification {
                     ));
                 }
 
-                // 🔹 Busca por CPF
                 if (filtro.getCpf() != null && !filtro.getCpf().isBlank()) {
                     predicates.add(cb.equal(root.get("cpf"), filtro.getCpf()));
                 }
 
-                // 🔹 Busca por RG
                 if (filtro.getRg() != null && !filtro.getRg().isBlank()) {
                     predicates.add(cb.equal(root.get("rg"), filtro.getRg()));
                 }
 
-                // 🔹 Filtro por sexo (enum)
                 if (filtro.getSexo() != null) {
                     predicates.add(cb.equal(root.get("sexo"), filtro.getSexo()));
                 }
 
-                // 🔹 Filtro por situação da pessoa (enum)
                 if (filtro.getSituacaoPessoa() != null) {
                     predicates.add(cb.equal(root.get("situacaoPessoa"), filtro.getSituacaoPessoa()));
                 }

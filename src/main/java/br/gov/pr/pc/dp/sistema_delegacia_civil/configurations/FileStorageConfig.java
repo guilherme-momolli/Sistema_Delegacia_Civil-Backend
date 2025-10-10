@@ -11,15 +11,18 @@ public class FileStorageConfig {
     private String imageDir;
     private String audioDir;
     private String videoDir;
+    private String reportDir;
+
 
     public FileStorageConfig() {
     }
 
-    public FileStorageConfig(String uploadDir, String imageDir, String audioDir, String videoDir) {
+    public FileStorageConfig(String uploadDir, String imageDir, String audioDir, String videoDir, String reportDir) {
         this.uploadDir = uploadDir;
         this.imageDir = imageDir;
         this.audioDir = audioDir;
         this.videoDir = videoDir;
+        this.reportDir = reportDir;
     }
 
     public String getUploadDir() {
@@ -38,6 +41,8 @@ public class FileStorageConfig {
         return videoDir != null ? videoDir : getUploadDir() + "/Videos";
     }
 
+    public String getReportDir() {return reportDir != null? reportDir: getReportDir() + "/Relatorios";}
+
     public void setUploadDir(String uploadDir) {
         this.uploadDir = uploadDir;
     }
@@ -52,5 +57,9 @@ public class FileStorageConfig {
 
     public void setVideoDir(String videoDir) {
         this.videoDir = videoDir;
+    }
+
+    public void setReportDir(String reportDir) {
+        this.reportDir = reportDir;
     }
 }

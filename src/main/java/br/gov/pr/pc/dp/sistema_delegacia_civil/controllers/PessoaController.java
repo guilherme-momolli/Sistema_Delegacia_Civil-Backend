@@ -1,18 +1,18 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.controllers;
 
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.pessoa.PessoaFiltroDTO;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.pessoa.PessoaRequestDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.pessoa.PessoaResponseDTO;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.mappers.PessoaMapper;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Pessoa;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.services.PessoaService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,23 +24,24 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
+
+
+import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/pessoa")
-@Tag(name = "Pessoa", description = "Operações relacionadas aos pessoas cadastrados")
+@Tag(name = "Pessoa", description = "Operações relacionadas às pessoas cadastradas")
 public class PessoaController {
 
-    @Autowired
     private final PessoaService pessoaService;
-    private final PessoaMapper pessoaMapper;
-
+    private final ObjectMapper objectMapper;
 
     @Operation(summary = "Listar todas as pessoas")
     @GetMapping("/list")
-    public ResponseEntity<List<Pessoa>> listarPessoas() {
-
+    public ResponseEntity<List<PessoaResponseDTO>> listarPessoas() {
         return ResponseEntity.ok(pessoaService.listPessoa());
     }
 
@@ -49,9 +50,8 @@ public class PessoaController {
             @ApiResponse(responseCode = "200", description = "Pessoa encontrada"),
             @ApiResponse(responseCode = "404", description = "Pessoa não encontrada", content = @Content)
     })
-
     @GetMapping("/getById/{id}")
-    public ResponseEntity<Pessoa> buscarPessoaPorId(@PathVariable Long id) {
+    public ResponseEntity<PessoaResponseDTO> buscarPessoaPorId(@PathVariable Long id) {
         return ResponseEntity.ok(pessoaService.getById(id));
     }
 
@@ -65,11 +65,7 @@ public class PessoaController {
         if (pageable.getSort().stream().anyMatch(order -> !camposValidos.contains(order.getProperty()))) {
             pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("nome").ascending());
         }
-
-        Page<Pessoa> pessoas = pessoaService.buscarComFiltro(filtro, pageable);
-        Page<PessoaResponseDTO> resultados = pessoas.map(PessoaMapper::toResponseDTO);
-        return ResponseEntity.ok(resultados);
-
+        return ResponseEntity.ok(pessoaService.buscarComFiltro(filtro, pageable));
     }
 
     @Operation(summary = "Cadastrar nova pessoa")
@@ -78,13 +74,22 @@ public class PessoaController {
             @ApiResponse(responseCode = "400", description = "Erro nos dados enviados", content = @Content)
     })
     @PostMapping(consumes = {"multipart/form-data"})
-    public ResponseEntity<Pessoa> cadastrarPessoa(
-            @RequestPart("pessoa") @Valid Pessoa pessoa,
+    public ResponseEntity<PessoaResponseDTO> cadastrarPessoa(
+            @RequestPart("pessoa") String pessoaJson,
             @RequestPart(value = "imagem", required = false) MultipartFile imagem) {
 
-        Pessoa pessoaCriada = pessoaService.createPessoa(pessoa, imagem);
-        return ResponseEntity.created(URI.create("/pessoa/" + pessoaCriada.getId())).body(pessoaCriada);
+        try {
+            PessoaRequestDTO pessoaDTO = objectMapper.readValue(pessoaJson, PessoaRequestDTO.class);
+            PessoaResponseDTO response = pessoaService.createPessoa(pessoaDTO, imagem);
+            return ResponseEntity
+                    .created(URI.create("Imagens/Pessoas/" + response.getId()))
+                    .body(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
     }
+
 
     @Operation(summary = "Atualizar pessoa")
     @ApiResponses(value = {
@@ -93,13 +98,19 @@ public class PessoaController {
             @ApiResponse(responseCode = "400", description = "Dados inválidos ou conflito de CPF")
     })
     @PutMapping(value = "/{id}", consumes = {"multipart/form-data"})
-    public ResponseEntity<Pessoa> atualizarPessoa(
+    public ResponseEntity<PessoaResponseDTO> atualizarPessoa(
             @PathVariable Long id,
-            @RequestPart("pessoa") @Valid Pessoa pessoa,
+            @RequestPart("pessoa") String pessoaJson,
             @RequestPart(value = "imagem", required = false) MultipartFile imagem) {
 
-        Pessoa pessoaAtualizada = pessoaService.updatePessoa(id, pessoa, imagem);
-        return ResponseEntity.ok(pessoaAtualizada);
+        try {
+            PessoaRequestDTO pessoaDTO = objectMapper.readValue(pessoaJson, PessoaRequestDTO.class);
+            PessoaResponseDTO response = pessoaService.updatePessoa(id, pessoaDTO, imagem);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @Operation(summary = "Deletar uma pessoa")

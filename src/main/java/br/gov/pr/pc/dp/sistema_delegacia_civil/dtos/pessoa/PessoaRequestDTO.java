@@ -7,11 +7,13 @@ import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.pessoa.Genero;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.pessoa.SituacaoPessoa;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Endereco;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Pessoa;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -21,6 +23,7 @@ public class PessoaRequestDTO {
     private String imagemUrl;
     private String nome;
     private String nomeSocial;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate dataNascimento;
     private Genero sexo;
     private String cpf;

@@ -1,14 +1,13 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.services;
 
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.inquerito_policial.InqueritoPolicialRequestDTO;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.helpers.EnderecoHelper;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.helpers.PessoaEnvolvimentoHelper;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.mappers.InqueritoPolicialMapper;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Delegacia;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.InqueritoPolicial;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.PessoaEnvolvimento;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.repositorys.InqueritoPolicialRepository;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.validators.EntityValidator;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.repositories.InqueritoPolicialRepository;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.helpers.EntityHelper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +19,7 @@ import java.util.List;
 public class InqueritoPolicialService {
 
     private final InqueritoPolicialRepository inqueritoRepository;
-    private final EntityValidator entityValidator;
+    private final EntityHelper entityHelper;
     private final PessoaEnvolvimentoHelper pessoaEnvolvimentoHelper;
 
     @Transactional
@@ -30,20 +29,20 @@ public class InqueritoPolicialService {
 
     @Transactional
     public InqueritoPolicial findById(Long id) {
-        entityValidator.validarInqueritoPolicalExistente(id);
+        entityHelper.validarInqueritoPolicalExistente(id);
         return inqueritoRepository.findById(id).orElseThrow();
     }
 
     @Transactional
     public List<InqueritoPolicial> getInqueritosByDelegacia(Long delegaciaId) {
-        entityValidator.validarDelegaciaExistente(delegaciaId);
+        entityHelper.validarDelegaciaExistente(delegaciaId);
         return inqueritoRepository.findByDelegaciaId(delegaciaId);
     }
 
     @Transactional
     public InqueritoPolicial createInqueritoPolicial(InqueritoPolicialRequestDTO requestDTO) {
 
-        entityValidator.validarDelegaciaExistente(requestDTO.getDelegaciaId());
+        entityHelper.validarDelegaciaExistente(requestDTO.getDelegaciaId());
 
         Delegacia delegacia = new Delegacia();
         delegacia.setId(requestDTO.getDelegaciaId());
@@ -64,7 +63,7 @@ public class InqueritoPolicialService {
         InqueritoPolicial existente = findById(id);
 
         if (requestDTO.getDelegaciaId() != null) {
-            entityValidator.validarDelegaciaExistente(requestDTO.getDelegaciaId());
+            entityHelper.validarDelegaciaExistente(requestDTO.getDelegaciaId());
             Delegacia delegacia = new Delegacia();
             delegacia.setId(requestDTO.getDelegaciaId());
             existente.setDelegacia(delegacia);
@@ -89,7 +88,7 @@ public class InqueritoPolicialService {
 
     @Transactional
     public void delete(Long id) {
-        entityValidator.validarInqueritoPolicalExistente(id);
+        entityHelper.validarInqueritoPolicalExistente(id);
         inqueritoRepository.deleteById(id);
     }
 }

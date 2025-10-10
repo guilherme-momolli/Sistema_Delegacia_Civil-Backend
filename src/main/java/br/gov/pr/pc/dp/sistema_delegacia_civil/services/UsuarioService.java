@@ -5,9 +5,9 @@ import br.gov.pr.pc.dp.sistema_delegacia_civil.exceptions.file_storage.ResourceN
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Delegacia;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Usuario;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.Privilegio;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.repositorys.DelegaciaRepository;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.repositorys.UsuarioRepository;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.validators.JwtUtil;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.repositories.DelegaciaRepository;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.repositories.UsuarioRepository;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.utils.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

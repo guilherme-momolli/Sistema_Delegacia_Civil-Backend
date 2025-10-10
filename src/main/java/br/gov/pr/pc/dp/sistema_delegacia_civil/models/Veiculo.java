@@ -95,7 +95,7 @@ public class Veiculo {
     private String restricaoJudicial;
 
     @Column(name = "data_primeiro_licenciamento")
-    private OffsetDateTime dataPrimeiroLicenciamento;
+    private LocalDateTime dataPrimeiroLicenciamento;
 
     @Column(name = "numero_crv", length = 50)
     private String numeroCrv;

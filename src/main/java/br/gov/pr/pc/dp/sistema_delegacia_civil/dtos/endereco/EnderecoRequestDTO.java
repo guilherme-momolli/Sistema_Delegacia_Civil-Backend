@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class EnderecoRequestDTO {
 
+    private Long id;
     private Long numero;
     private String logradouro;
     private String bairro;

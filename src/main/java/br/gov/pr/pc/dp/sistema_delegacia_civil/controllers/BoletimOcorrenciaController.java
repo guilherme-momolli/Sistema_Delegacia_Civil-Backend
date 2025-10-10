@@ -69,6 +69,7 @@ public class BoletimOcorrenciaController {
         return ResponseEntity.ok(BoletimOcorrenciaMapper.toResponseDTO(boletim));
     }
 
+
     @Operation(summary = "Excluir boletim de ocorrência")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {

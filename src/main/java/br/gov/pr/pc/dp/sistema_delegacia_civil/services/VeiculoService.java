@@ -1,69 +1,61 @@
-package br.gov.pr.pc.dp.sistema_delegacia_civil.services;
-
-import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Veiculo;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.repositorys.VeiculoRepository;
-import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-
-@Service
-@RequiredArgsConstructor
-public class VeiculoService {
-
-    private final VeiculoRepository veiculoRepository;
-
-    public List<Veiculo> listarTodos() {
-        return veiculoRepository.findAll();
-    }
-
-    public Veiculo buscarPorId(Long id) {
-        return veiculoRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Veículo não encontrado com ID: " + id));
-    }
-
-    public Veiculo salvar(Veiculo veiculo) {
-        return veiculoRepository.save(veiculo);
-    }
-
-    public Veiculo atualizar(Long id, Veiculo dadosAtualizados) {
-        Veiculo existente = buscarPorId(id);
-
-        existente.setRenavam(dadosAtualizados.getRenavam());
-        existente.setPlaca(dadosAtualizados.getPlaca());
-        existente.setChassi(dadosAtualizados.getChassi());
-        existente.setNumeroMotor(dadosAtualizados.getNumeroMotor());
-        existente.setTipoVeiculo(dadosAtualizados.getTipoVeiculo());
-        existente.setCategoria(dadosAtualizados.getCategoria());
-        existente.setEspecie(dadosAtualizados.getEspecie());
-        existente.setAnoModelo(dadosAtualizados.getAnoModelo());
-        existente.setAnoFabricacao(dadosAtualizados.getAnoFabricacao());
-        existente.setCombustivel(dadosAtualizados.getCombustivel());
-        existente.setCambio(dadosAtualizados.getCambio());
-        existente.setTipoTracao(dadosAtualizados.getTipoTracao());
-        existente.setCorPredominante(dadosAtualizados.getCorPredominante());
-        existente.setCarroceria(dadosAtualizados.getCarroceria());
-        existente.setNumeroEixos(dadosAtualizados.getNumeroEixos());
-        existente.setCapacidadeCarga(dadosAtualizados.getCapacidadeCarga());
-        existente.setPotenciaMotor(dadosAtualizados.getPotenciaMotor());
-        existente.setCilindrada(dadosAtualizados.getCilindrada());
-        existente.setPesoBruto(dadosAtualizados.getPesoBruto());
-        existente.setUfRegistro(dadosAtualizados.getUfRegistro());
-        existente.setMunicipioRegistro(dadosAtualizados.getMunicipioRegistro());
-        existente.setSituacaoVeiculo(dadosAtualizados.getSituacaoVeiculo());
-        existente.setSituacaoLicenciamento(dadosAtualizados.getSituacaoLicenciamento());
-        existente.setRestricaoJudicial(dadosAtualizados.getRestricaoJudicial());
-        existente.setDataPrimeiroLicenciamento(dadosAtualizados.getDataPrimeiroLicenciamento());
-        existente.setNumeroCrv(dadosAtualizados.getNumeroCrv());
-        existente.setNumeroCrlv(dadosAtualizados.getNumeroCrlv());
-        existente.setTabelaFipe(dadosAtualizados.getTabelaFipe());
-
-        return veiculoRepository.save(existente);
-    }
-
-    public void deletar(Long id) {
-        Veiculo veiculo = buscarPorId(id);
-        veiculoRepository.delete(veiculo);
-    }
-}
+//package br.gov.pr.pc.dp.sistema_delegacia_civil.services;
+//
+//import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.bem.BemRequestDTO;
+//import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.veiculo.VeiculoRequestDTO;
+//import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.veiculo.VeiculoResponseDTO;
+//import br.gov.pr.pc.dp.sistema_delegacia_civil.exceptions.file_storage.ResourceNotFoundException;
+//import br.gov.pr.pc.dp.sistema_delegacia_civil.mappers.VeiculoMapper;
+//import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Bem;
+//import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Veiculo;
+//import br.gov.pr.pc.dp.sistema_delegacia_civil.repositories.BemRepository;
+//import br.gov.pr.pc.dp.sistema_delegacia_civil.repositories.VeiculoRepository;
+//import jakarta.transaction.Transactional;
+//import lombok.RequiredArgsConstructor;
+//import org.springframework.stereotype.Service;
+//import org.springframework.web.multipart.MultipartFile;
+//
+//@Service
+//public class VeiculoService extends BemService<VeiculoRequestDTO, VeiculoResponseDTO> {
+//
+//    private final VeiculoRepository veiculoRepository;
+//
+//    public VeiculoService(BemRepository bemRepository, FileStorageService fileStorageService, VeiculoRepository veiculoRepository) {
+//        super(bemRepository, fileStorageService);
+//        this.veiculoRepository = veiculoRepository;
+//    }
+//
+//    @Override
+//    @Transactional
+//    public VeiculoResponseDTO create(VeiculoRequestDTO dto, MultipartFile imagem) {
+//        // Cria o bem genérico
+//        Bem bem = new Bem();
+//        bem.setTipoBem("VEICULO");
+//        bem.setImagemUrl(salvarImagem(imagem));
+//        bemRepository.save(bem);
+//
+//        // Cria o veículo específico
+//        Veiculo veiculo = VeiculoMapper.toEntity(dto, bem);
+//        veiculoRepository.save(veiculo);
+//
+//        return VeiculoMapper.toResponseDTO(veiculo);
+//    }
+//
+//    @Override
+//    @Transactional
+//    public VeiculoResponseDTO update(Long id, VeiculoRequestDTO dto, MultipartFile imagem) {
+//        Veiculo veiculoExistente = veiculoRepository.findById(id)
+//                .orElseThrow(() -> new ResourceNotFoundException("Veículo não encontrado"));
+//
+//        // Atualiza a imagem do bem
+//        if (imagem != null && !imagem.isEmpty()) {
+//            veiculoExistente.getBem().setImagemUrl(salvarImagem(imagem));
+//        }
+//
+//        // Atualiza os dados do veículo
+//        Veiculo veiculoAtualizado = VeiculoMapper.toEntity(dto, veiculoExistente.getBem());
+//        veiculoAtualizado.setId(id);
+//        veiculoRepository.save(veiculoAtualizado);
+//
+//        return VeiculoMapper.toResponseDTO(veiculoAtualizado);
+//    }
+//}

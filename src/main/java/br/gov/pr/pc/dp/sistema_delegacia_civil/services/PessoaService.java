@@ -1,21 +1,24 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.services;
 
 
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.pessoa.PessoaRequestDTO;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.pessoa.PessoaResponseDTO;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.helpers.EnderecoHelper;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.helpers.PessoaHelper;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.mappers.PessoaMapper;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.pessoa.PessoaFiltroDTO;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.pessoa.PessoaResponseDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.exceptions.file_storage.ResourceNotFoundException;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Endereco;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Pessoa;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.repositorys.EnderecoRepository;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.repositorys.PessoaRepository;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.repositories.EnderecoRepository;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.repositories.PessoaRepository;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.specifications.PessoaSpecification;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.validators.documentos.CpfValidator;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.validators.pessoa.CpfValidator;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,85 +30,70 @@ import java.util.Optional;
 public class PessoaService {
 
     private final PessoaRepository pessoaRepository;
-    private final FileStorageService fileStorageService;
     private final EnderecoRepository enderecoRepository;
-    private final String subFolder = "Imagens/Pessoa";
+    private final FileStorageService fileStorageService;
+    private final PessoaMapper pessoaMapper;
 
-    public List<Pessoa> listPessoa() {
-        return pessoaRepository.findAll();
+    private final String subFolder = "Imagens/Pessoas";
+
+    public List<PessoaResponseDTO> listPessoa() {
+        return pessoaRepository.findAll()
+                .stream()
+                .map(PessoaMapper::toResponseDTO)
+                .toList();
     }
 
-    public Pessoa getById(Long id) {
-        return pessoaRepository.findById(id)
+    public PessoaResponseDTO getById(Long id) {
+        Pessoa pessoa = pessoaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Pessoa não encontrada"));
+        return PessoaMapper.toResponseDTO(pessoa);
     }
 
-    public Page<Pessoa> buscarComFiltro(PessoaFiltroDTO filtro, Pageable pageable) {
-        return pessoaRepository.findAll(PessoaSpecification.filtroCustomizado(filtro), pageable);
+    public Page<PessoaResponseDTO> buscarComFiltro(PessoaFiltroDTO filtro, Pageable pageable) {
+        return pessoaRepository.findAll(PessoaSpecification.filtroCustomizado(filtro), pageable)
+                .map(PessoaMapper::toResponseDTO);
     }
 
     @Transactional
-    public Pessoa createPessoa(Pessoa pessoa, MultipartFile imagem) {
-        if (!CpfValidator.isValidCPF(pessoa.getCpf())) {
-            throw new IllegalArgumentException("CPF inválido.");
-        }
+    public PessoaResponseDTO createPessoa(PessoaRequestDTO dto, MultipartFile imagem) {
+        Pessoa pessoa = PessoaMapper.toEntity(dto);
 
-        if (pessoa.getEndereco() != null) {
-            Endereco endereco = pessoa.getEndereco().getId() == null
-                    ? enderecoRepository.save(pessoa.getEndereco())
-                    : enderecoRepository.findById(pessoa.getEndereco().getId())
-                    .map(existing -> {
-                        existing.setLogradouro(pessoa.getEndereco().getLogradouro());
-                        existing.setBairro(pessoa.getEndereco().getBairro());
-                        existing.setNumero(pessoa.getEndereco().getNumero());
-                        existing.setMunicipio(pessoa.getEndereco().getMunicipio());
-                        existing.setUf(pessoa.getEndereco().getUf());
-                        existing.setPais(pessoa.getEndereco().getPais());
-                        return enderecoRepository.save(existing);
-                    })
-                    .orElseThrow(() -> new ResourceNotFoundException("Endereço não encontrado."));
-            pessoa.setEndereco(endereco);
-        }
+        PessoaHelper.validarPessoa(pessoa);
 
-        Optional<Pessoa> pessoaExistente = pessoaRepository.findByCpf(pessoa.getCpf());
-        if (pessoaExistente.isPresent()) {
-            throw new IllegalArgumentException("CPF já cadastrado.");
-        }
+        pessoaRepository.findByCpf(pessoa.getCpf())
+                .ifPresent(p -> { throw new IllegalArgumentException("CPF já cadastrado."); });
+
+        pessoa.setEndereco(EnderecoHelper.resolverEndereco(dto.getEndereco(), enderecoRepository));
+
 
         if (imagem != null && !imagem.isEmpty()) {
             String nomeArquivo = fileStorageService.storeFile(imagem, subFolder);
             pessoa.setImagemUrl(nomeArquivo);
         }
 
-        return pessoaRepository.save(pessoa);
+        return PessoaMapper.toResponseDTO(pessoaRepository.save(pessoa));
     }
 
     @Transactional
-    public Pessoa updatePessoa(Long id, Pessoa pessoaAtualizada, MultipartFile imagem) {
+    public PessoaResponseDTO updatePessoa(Long id, PessoaRequestDTO dto, MultipartFile imagem) {
         Pessoa pessoaExistente = pessoaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Pessoa não encontrada"));
 
-        // Atualizar campos permitidos
-        pessoaExistente.setNome(pessoaAtualizada.getNome());
-        pessoaExistente.setCpf(pessoaAtualizada.getCpf());
-        pessoaExistente.setRg(pessoaAtualizada.getRg());
-        pessoaExistente.setDataNascimento(pessoaAtualizada.getDataNascimento());
-        pessoaExistente.setEmail(pessoaAtualizada.getEmail());
-        pessoaExistente.setTelefoneCelular(pessoaAtualizada.getTelefoneCelular());
-        pessoaExistente.setTelefoneFixo(pessoaAtualizada.getTelefoneFixo());
-        pessoaExistente.setSexo(pessoaAtualizada.getSexo());
-        pessoaExistente.setEstadoCivil(pessoaAtualizada.getEstadoCivil());
-        pessoaExistente.setNacionalidade(pessoaAtualizada.getNacionalidade());
-        pessoaExistente.setNaturalidade(pessoaAtualizada.getNaturalidade());
-        pessoaExistente.setProfissao(pessoaAtualizada.getProfissao());
+        Pessoa pessoaAtualizada = PessoaMapper.toEntity(dto);
+        pessoaAtualizada.setId(pessoaExistente.getId());
 
+        pessoaAtualizada.setImagemUrl(pessoaExistente.getImagemUrl());
         if (imagem != null && !imagem.isEmpty()) {
             String nomeArquivo = fileStorageService.storeFile(imagem, subFolder);
-            pessoaExistente.setImagemUrl(nomeArquivo);
+            pessoaAtualizada.setImagemUrl(nomeArquivo);
         }
 
-        return pessoaRepository.save(pessoaExistente);
+
+        pessoaAtualizada.setEndereco(EnderecoHelper.resolverEndereco(dto.getEndereco(), enderecoRepository));
+
+        return PessoaMapper.toResponseDTO(pessoaRepository.save(pessoaAtualizada));
     }
+
 
     @Transactional
     public void deletePessoa(Long id) {
@@ -116,7 +104,6 @@ public class PessoaService {
             fileStorageService.deleteFile(pessoa.getImagemUrl());
         }
 
-        pessoaRepository.deleteById(id);
+        pessoaRepository.delete(pessoa);
     }
 }
-

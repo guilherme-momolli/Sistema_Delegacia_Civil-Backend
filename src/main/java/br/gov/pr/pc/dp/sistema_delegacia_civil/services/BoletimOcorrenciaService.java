@@ -5,8 +5,8 @@ import br.gov.pr.pc.dp.sistema_delegacia_civil.helpers.EnderecoHelper;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.helpers.PessoaEnvolvimentoHelper;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.mappers.BoletimOcorrenciaMapper;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.*;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.repositorys.BoletimOcorrenciaRepository;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.validators.EntityValidator;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.repositories.BoletimOcorrenciaRepository;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.helpers.EntityHelper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ import java.util.List;
 public class BoletimOcorrenciaService {
 
     private final BoletimOcorrenciaRepository boletimRepository;
-    private final EntityValidator entityValidator;
+    private final EntityHelper entityHelper;
     private final EnderecoHelper enderecoHelper;
     private final PessoaEnvolvimentoHelper pessoaEnvolvimentoHelper;
 
@@ -30,13 +30,13 @@ public class BoletimOcorrenciaService {
 
     @Transactional
     public BoletimOcorrencia findById(Long id) {
-        entityValidator.validarBoletimExistente(id);
+        entityHelper.validarBoletimExistente(id);
         return boletimRepository.findById(id).orElseThrow();
     }
 
     @Transactional
     public List<BoletimOcorrencia> getBoletinsByDelegacia(Long delegaciaId) {
-        entityValidator.validarDelegaciaExistente(delegaciaId);
+        entityHelper.validarDelegaciaExistente(delegaciaId);
         return boletimRepository.findByDelegaciaId(delegaciaId);
     }
 
@@ -44,8 +44,8 @@ public class BoletimOcorrenciaService {
     public BoletimOcorrencia createBoletimOcorrencia(BoletimOcorrenciaRequestDTO requestDTO) {
 
         BoletimOcorrencia boletim = BoletimOcorrenciaMapper.toEntity(requestDTO);
-        entityValidator.validarDelegaciaExistente(boletim.getDelegacia().getId());
-        boletim.setEndereco(enderecoHelper.resolveEndereco(boletim.getEndereco()));
+        entityHelper.validarDelegaciaExistente(boletim.getDelegacia().getId());
+//        boletim.setEndereco(enderecoHelper.resolverEndereco(requestDTO.getEndereco()));
 
         BoletimOcorrencia salvo = boletimRepository.save(boletim);
 
@@ -64,7 +64,7 @@ public class BoletimOcorrenciaService {
         BoletimOcorrencia boletimAtualizado = BoletimOcorrenciaMapper.toEntity(requestDTO);
 
         if (boletimAtualizado.getDelegacia() != null && boletimAtualizado.getDelegacia().getId() != null) {
-            entityValidator.validarDelegaciaExistente(boletimAtualizado.getDelegacia().getId());
+            entityHelper.validarDelegaciaExistente(boletimAtualizado.getDelegacia().getId());
             existing.setDelegacia(boletimAtualizado.getDelegacia());
         }
 
@@ -74,7 +74,7 @@ public class BoletimOcorrenciaService {
         existing.setNatureza(boletimAtualizado.getNatureza());
         existing.setRepresentacao(boletimAtualizado.getRepresentacao());
 
-        existing.setEndereco(enderecoHelper.resolveEndereco(boletimAtualizado.getEndereco()));
+//        existing.setEndereco(enderecoHelper.resolverEndereco(requestDTO.getEndereco()));
 
         List<PessoaEnvolvimento> envolvimentos =
                 pessoaEnvolvimentoHelper.mapearPessoas(requestDTO.getPessoasEnvolvidas(), existing);
@@ -85,7 +85,7 @@ public class BoletimOcorrenciaService {
 
     @Transactional
     public void delete(Long id) {
-        entityValidator.validarBoletimExistente(id);
+        entityHelper.validarBoletimExistente(id);
         boletimRepository.deleteById(id);
     }
 }

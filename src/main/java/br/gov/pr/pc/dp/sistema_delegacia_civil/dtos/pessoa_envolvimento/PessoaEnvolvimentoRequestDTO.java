@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PessoaEnvolvimentoRequestDTO {
 
-    private Long id;
     private Long pessoaId;
     private Long boletimId;
     private Long inqueritoId;

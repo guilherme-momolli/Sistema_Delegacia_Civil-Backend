@@ -1,107 +1,85 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.controllers;
 
-import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Arma;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.arma.ArmaRequestDTO;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.arma.ArmaResponseDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.services.ArmaService;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.services.FileStorageService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 @CrossOrigin
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/arma")
-@Tag(name = "Arma")
+@RequestMapping("/armas")
+@Tag(name = "Armas", description = "Operações relacionadas às armas vinculadas aos bens")
 public class ArmaController {
 
     private final ArmaService armaService;
-    private final FileStorageService fileStorageService;
 
-    @Operation(summary = "Listar todas as armas")
-    @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso",
-            content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = Arma.class)))
+    @Operation(summary = "Cadastrar uma nova arma")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Arma criada com sucesso",
+                    content = @Content(schema = @Schema(implementation = ArmaResponseDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Erro nos dados enviados", content = @Content)
+    })
+    @PostMapping
+    public ResponseEntity<ArmaResponseDTO> create(@Valid @RequestBody ArmaRequestDTO dto) {
+        ArmaResponseDTO response = armaService.create(dto);
+        return ResponseEntity.created(URI.create("/armas/" + response.getBemId())).body(response);
+    }
+
+    @Operation(summary = "Listar todas as armas cadastradas")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso",
+                    content = @Content(schema = @Schema(implementation = ArmaResponseDTO.class)))
+    })
     @GetMapping("/list")
-    public ResponseEntity<List<Arma>> getAllArmas() {
-        try {
-            return ResponseEntity.ok(armaService.listarTodasArmas());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+    public ResponseEntity<List<ArmaResponseDTO>> listAll() {
+        return ResponseEntity.ok(armaService.listAll());
     }
 
     @Operation(summary = "Buscar arma por ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Arma encontrada",
-                    content = @Content(schema = @Schema(implementation = Arma.class))),
-            @ApiResponse(responseCode = "404", description = "Arma não encontrada")
+                    content = @Content(schema = @Schema(implementation = ArmaResponseDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Arma não encontrada", content = @Content)
     })
-    @GetMapping("/list/{id}")
-    public ResponseEntity<Arma> getArmaById(
-            @Parameter(description = "ID da arma") @PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(armaService.getById(id));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+    @GetMapping("/getById/{id}")
+    public ResponseEntity<ArmaResponseDTO> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(armaService.getById(id));
     }
 
-    @Operation(summary = "Criar nova arma com imagem")
+    @Operation(summary = "Atualizar dados de uma arma existente")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Arma criada com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Dados inválidos")
+            @ApiResponse(responseCode = "200", description = "Arma atualizada com sucesso",
+                    content = @Content(schema = @Schema(implementation = ArmaResponseDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Arma não encontrada", content = @Content)
     })
-    @PostMapping(value = "/create", consumes = {"multipart/form-data"})
-    public ResponseEntity<Arma> createArma(
-            @Parameter(description = "Dados da arma") @RequestPart("arma") Arma arma) {
-        try {
-            Arma novaArma = armaService.salvar(arma);
-            return ResponseEntity.status(HttpStatus.CREATED).body(novaArma);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+    @PutMapping("/{id}")
+    public ResponseEntity<ArmaResponseDTO> update(@PathVariable Long id,
+                                                  @Valid @RequestBody ArmaRequestDTO dto) {
+        ArmaResponseDTO response = armaService.update(id, dto);
+        return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "Atualizar uma arma")
+    @Operation(summary = "Excluir uma arma")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Arma atualizada com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Dados inválidos")
-    })
-    @PutMapping(value = "/update/{id}", consumes = {"multipart/form-data"})
-    public ResponseEntity<Arma> updateArma(
-            @Parameter(description = "ID da arma a ser atualizada") @PathVariable Long id,
-            @Parameter(description = "Dados atualizados da arma") @RequestPart("arma") Arma arma) {
-        try {
-            Arma atualizada = armaService.atualizar(id, arma);
-            return ResponseEntity.ok(atualizada);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-    }
-
-    @Operation(summary = "Excluir arma por ID")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Arma deletada com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Arma não encontrada")
+            @ApiResponse(responseCode = "204", description = "Arma excluída com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Arma não encontrada", content = @Content)
     })
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteArma(
-            @Parameter(description = "ID da arma a ser deletada") @PathVariable Long id) {
-        try {
-            armaService.deletar(id);
-            return ResponseEntity.noContent().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        armaService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

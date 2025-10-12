@@ -1,6 +1,6 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.delegacia;
 
-import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.Privilegio;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.usuario.Privilegio;
 import lombok.Data;
 
 @Data

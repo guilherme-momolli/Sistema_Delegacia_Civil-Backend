@@ -4,7 +4,7 @@ import br.gov.pr.pc.dp.sistema_delegacia_civil.exceptions.file_storage.ResourceN
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Endereco;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Delegacia;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Usuario;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.Privilegio;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.usuario.Privilegio;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.repositories.EnderecoRepository;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.repositories.DelegaciaRepository;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.repositories.UsuarioRepository;

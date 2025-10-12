@@ -1,13 +1,15 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.models;
 
+import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.endereco.UF;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.veiculo.*;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 
 @Data
 @Entity
@@ -35,34 +37,41 @@ public class Veiculo {
     private String numeroMotor;
 
     @Column(name = "tipo_veiculo", length = 50)
-    private String tipoVeiculo;
+    @Enumerated(EnumType.STRING)
+    private TipoVeiculo tipoVeiculo;
 
     @Column(length = 50)
-    private String categoria;
+    @Enumerated(EnumType.STRING)
+    private CategoriaVeiculo categoria;
 
-    @Column(length = 50)
-    private String especie;
+    @Column(name ="especie_veiculo", length = 50)
+    @Enumerated(EnumType.STRING)
+    private EspecieVeiculo especieVeiculo;
 
     @Column(name = "ano_modelo", length = 4)
-    private String anoModelo;
+    private LocalDate anoModelo;
 
     @Column(name = "ano_fabricacao", length = 4)
-    private String anoFabricacao;
+    private LocalDate anoFabricacao;
 
     @Column(length = 25)
-    private String combustivel;
+    @Enumerated(EnumType.STRING)
+    private Combustivel combustivel;
 
     @Column(length = 11)
-    private String cambio;
+    @Enumerated(EnumType.STRING)
+    private Cambio cambio;
 
     @Column(name = "tipo_tracao", length = 25)
-    private String tipoTracao;
+    @Enumerated(EnumType.STRING)
+    private  TipoTracao tipoTracao;
 
     @Column(name = "cor_predominante", length = 50)
     private String corPredominante;
 
     @Column(length = 50)
-    private String carroceria;
+    @Enumerated(EnumType.STRING)
+    private Carroceria carroceria;
 
     @Column(name = "numero_eixos")
     private Integer numeroEixos;
@@ -80,22 +89,25 @@ public class Veiculo {
     private BigDecimal pesoBruto;
 
     @Column(name = "uf_registro", length = 2)
-    private String ufRegistro;
+    @Enumerated(EnumType.STRING)
+    private UF ufRegistro;
 
     @Column(name = "municipio_registro", length = 28)
     private String municipioRegistro;
 
     @Column(name = "situacao_veiculo", length = 50)
-    private String situacaoVeiculo;
+    @Enumerated(EnumType.STRING)
+    private SituacaoVeiculo situacaoVeiculo;
 
     @Column(name = "situacao_licenciamento", length = 50)
-    private String situacaoLicenciamento;
+    @Enumerated(EnumType.STRING)
+    private SituacaoLicenciamento situacaoLicenciamento;
 
     @Column(name = "restricao_judicial", length = 50)
     private String restricaoJudicial;
 
     @Column(name = "data_primeiro_licenciamento")
-    private LocalDateTime dataPrimeiroLicenciamento;
+    private LocalDate dataPrimeiroLicenciamento;
 
     @Column(name = "numero_crv", length = 50)
     private String numeroCrv;

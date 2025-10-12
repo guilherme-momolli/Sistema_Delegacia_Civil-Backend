@@ -1,4 +1,4 @@
-package br.gov.pr.pc.dp.sistema_delegacia_civil.enums;
+package br.gov.pr.pc.dp.sistema_delegacia_civil.enums.bem;
 
 public enum SituacaoBem {
     APREENDIDO,

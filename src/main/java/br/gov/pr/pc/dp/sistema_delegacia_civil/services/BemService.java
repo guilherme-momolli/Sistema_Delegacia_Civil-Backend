@@ -2,10 +2,9 @@ package br.gov.pr.pc.dp.sistema_delegacia_civil.services;
 
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.bem.BemRequestDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.bem.BemResponseDTO;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.TipoBem;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.bem.TipoBem;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.exceptions.file_storage.ResourceNotFoundException;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.mappers.BemMapper;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.mappers.PessoaMapper;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Bem;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.repositories.BemRepository;
 import jakarta.transaction.Transactional;

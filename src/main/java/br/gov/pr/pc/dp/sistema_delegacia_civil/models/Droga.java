@@ -1,5 +1,7 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.models;
 
+import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.UnidadeMedida;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.droga.TipoDroga;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
@@ -21,13 +23,15 @@ public class Droga {
     private Bem bem;
 
     @Column(name = "tipo_droga", length = 50)
-    private String tipoDroga;
+    @Enumerated(EnumType.STRING)
+    private TipoDroga tipoDroga;
 
     @Column(name = "nome_popular", length = 255)
     private String nomePopular;
 
     @Column(name = "unidade_medida", length = 50)
-    private String unidadeMedida;
+    @Enumerated(EnumType.STRING)
+    private UnidadeMedida unidadeMedida;
 
     @Column(name = "quantidade_por_extenso", columnDefinition = "TEXT")
     private String quantidadePorExtenso;

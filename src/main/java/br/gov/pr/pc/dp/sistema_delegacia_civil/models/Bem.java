@@ -1,14 +1,12 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.models;
 
-import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.TipoBem;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.bem.SituacaoBem;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.bem.TipoBem;
 import jakarta.persistence.*;
 import lombok.Data;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.util.List;
 
 
@@ -22,6 +20,7 @@ public class Bem {
     private Long id;
 
     @Column(name = "tipo_bem", nullable = false, length = 20)
+    @Enumerated(EnumType.STRING)
     private TipoBem tipoBem;
 
     @Column(name = "imagem_url", length = 255)
@@ -47,7 +46,8 @@ public class Bem {
     private Instituicao instituicao;
 
     @Column(name = "situacao_bem", length = 50)
-    private String situacaoBem;
+    @Enumerated(EnumType.STRING)
+    private SituacaoBem situacaoBem;
 
     @Column(length = 100)
     private String origem;

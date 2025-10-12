@@ -1,4 +1,4 @@
-package br.gov.pr.pc.dp.sistema_delegacia_civil.validators;
+package br.gov.pr.pc.dp.sistema_delegacia_civil.validators.instituicao;
 
 public class CnpjValidator {
 

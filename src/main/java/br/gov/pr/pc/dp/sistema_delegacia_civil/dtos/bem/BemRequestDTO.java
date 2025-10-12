@@ -1,8 +1,11 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.bem;
 
-import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.TipoBem;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.arma.ArmaRequestDTO;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.droga.DrogaRequestDTO;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.objeto.ObjetoRequestDTO;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.veiculo.VeiculoRequestDTO;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.bem.SituacaoBem;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.bem.TipoBem;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,10 +26,14 @@ public class BemRequestDTO {
     private Long pessoaId;
     private Long delegaciaId;
     private Long instituicaoId;
-    private String situacaoBem;
+    private SituacaoBem situacaoBem;
     private String origem;
     private String numeroLacre;
     private String localBem;
     private String observacao;
     private String descricao;
+    private ArmaRequestDTO arma;
+    private ObjetoRequestDTO objeto;
+    private DrogaRequestDTO droga;
+    private VeiculoRequestDTO veiculo;
 }

@@ -1,12 +1,14 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.models;
 
+import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.arma.Calibre;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.arma.EspecieArma;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.arma.TipoArmaFogo;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 
 @Data
 @Entity
@@ -21,25 +23,28 @@ public class Arma {
     @JoinColumn(name = "bem_id", unique = true, nullable = false)
     private Bem bem;
 
-    @Column(name = "tipo_arma_fogo", length = 255)
-    private String tipoArmaFogo;
+    @Column(name = "tipo_arma_fogo", length = 50)
+    @Enumerated(EnumType.STRING)
+    private TipoArmaFogo tipoArmaFogo;
+
+    @Column(name= "especie_arma", length = 50)
+    @Enumerated(EnumType.STRING)
+    private EspecieArma especieArma;
 
     @Column(length = 255)
-    private String especie;
+    @Enumerated(EnumType.STRING)
+    private Calibre calibre;
 
-    @Column(length = 255)
-    private String calibre;
-
-    @Column(name = "numero_porte", length = 255)
+    @Column(name = "numero_porte", length = 50)
     private String numeroPorte;
 
-    @Column(name = "numero_serie", length = 255)
+    @Column(name = "numero_serie", length = 50)
     private String numeroSerie;
 
-    @Column(name = "numero_registro", length = 255)
+    @Column(name = "numero_registro", length = 50)
     private String numeroRegistro;
 
-    @Column(length = 255)
+    @Column(length = 50)
     private String capacidade;
 
     @CreationTimestamp

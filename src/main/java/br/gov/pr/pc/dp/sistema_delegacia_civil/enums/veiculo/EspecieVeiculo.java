@@ -1,7 +1,7 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.enums.veiculo;
 
 
-public enum Especie {
+public enum EspecieVeiculo {
 
     BLINDADO,
     CARGA,

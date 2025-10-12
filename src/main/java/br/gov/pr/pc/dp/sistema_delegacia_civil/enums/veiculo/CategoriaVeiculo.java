@@ -1,6 +1,6 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.enums.veiculo;
 
-public enum Categoria {
+public enum CategoriaVeiculo {
 
     ALUGUEL,
     APRENDIZAGEM,

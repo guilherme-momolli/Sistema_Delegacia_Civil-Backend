@@ -1,6 +1,6 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.utils;
 
-import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.Privilegio;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.usuario.Privilegio;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 

@@ -1,6 +1,6 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.pessoa;
 
-import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.Privilegio;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.usuario.Privilegio;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Pessoa;
 import lombok.AllArgsConstructor;
 import lombok.Data;

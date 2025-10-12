@@ -57,7 +57,7 @@ public class ArmaService {
         Arma updatedData = ArmaMapper.toEntity(dto);
 
         arma.setTipoArmaFogo(updatedData.getTipoArmaFogo());
-        arma.setEspecie(updatedData.getEspecie());
+        arma.setEspecieArma(updatedData.getEspecieArma());
         arma.setCalibre(updatedData.getCalibre());
         arma.setNumeroPorte(updatedData.getNumeroPorte());
         arma.setNumeroSerie(updatedData.getNumeroSerie());

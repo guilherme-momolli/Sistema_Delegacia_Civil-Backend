@@ -2,6 +2,7 @@ package br.gov.pr.pc.dp.sistema_delegacia_civil.mappers;
 
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.arma.ArmaRequestDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.arma.ArmaResponseDTO;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.bem.BemResponseDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Arma;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Bem;
 import org.springframework.stereotype.Component;
@@ -10,44 +11,54 @@ import org.springframework.stereotype.Component;
 public class ArmaMapper {
 
     public static Arma toEntity(ArmaRequestDTO dto) {
-        if (dto == null) return null;
-
-        Arma arma = new Arma();
-
-        if (dto.getBemId() != null) {
-            Bem bem = BemMapper.toEntity(dto.getBemId());
-            arma.setBem(bem);
+        if (dto == null) {
+            return null;
         }
 
-        arma.setTipoArmaFogo(dto.getTipoArmaFogo());
-        arma.setEspecie(dto.getEspecie());
-        arma.setCalibre(dto.getCalibre());
-        arma.setNumeroPorte(dto.getNumeroPorte());
-        arma.setNumeroSerie(dto.getNumeroSerie());
-        arma.setNumeroRegistro(dto.getNumeroRegistro());
-        arma.setCapacidade(dto.getCapacidade());
+        Arma entity = new Arma();
 
-        return arma;
+        entity.setTipoArmaFogo(dto.getTipoArmaFogo());
+        entity.setEspecieArma(dto.getEspecieArma());
+        entity.setCalibre(dto.getCalibre());
+        entity.setNumeroPorte(dto.getNumeroPorte());
+        entity.setNumeroSerie(dto.getNumeroSerie());
+        entity.setNumeroRegistro(dto.getNumeroRegistro());
+        entity.setCapacidade(dto.getCapacidade());
+
+        if (dto.getBemId() != null && dto.getBemId() != null) {
+            Bem bem = new Bem();
+            bem.setId(dto.getBemId());
+            entity.setBem(bem);
+        }
+
+        return entity;
     }
 
-    public static ArmaResponseDTO toResponseDTO(Arma arma) {
-        if (arma == null) return null;
+    public static ArmaResponseDTO toResponseDTO(Arma entity) {
+        if (entity == null) {
+            return null;
+        }
 
         ArmaResponseDTO dto = new ArmaResponseDTO();
 
-        dto.setId(arma.getId());
-        dto.setBemId(BemMapper.toResponseDTO(arma.getBem()));
-        dto.setTipoArmaFogo(arma.getTipoArmaFogo());
-        dto.setEspecie(arma.getEspecie());
-        dto.setCalibre(arma.getCalibre());
-        dto.setNumeroPorte(arma.getNumeroPorte());
-        dto.setNumeroSerie(arma.getNumeroSerie());
-        dto.setNumeroRegistro(arma.getNumeroRegistro());
-        dto.setCapacidade(arma.getCapacidade());
-        dto.setCreatedAt(arma.getCreatedAt());
-        dto.setUpdatedAt(arma.getUpdatedAt());
+        dto.setId(entity.getId());
+        dto.setTipoArmaFogo(entity.getTipoArmaFogo());
+        dto.setEspecieArma(entity.getEspecieArma());
+        dto.setCalibre(entity.getCalibre());
+        dto.setNumeroPorte(entity.getNumeroPorte());
+        dto.setNumeroSerie(entity.getNumeroSerie());
+        dto.setNumeroRegistro(entity.getNumeroRegistro());
+        dto.setCapacidade(entity.getCapacidade());
+        dto.setCreatedAt(entity.getCreatedAt());
+        dto.setUpdatedAt(entity.getUpdatedAt());
+
+        if (entity.getBem() != null) {
+            Bem bem = entity.getBem();
+            BemResponseDTO bemDTO = new BemResponseDTO();
+            bemDTO.setId(bem.getId());
+            dto.setBemId(bem.getId());
+        }
 
         return dto;
     }
 }
-

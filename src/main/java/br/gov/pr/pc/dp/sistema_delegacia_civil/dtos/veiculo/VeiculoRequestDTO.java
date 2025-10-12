@@ -1,12 +1,14 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.veiculo;
 
+import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.endereco.UF;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.veiculo.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 
 @Data
 @AllArgsConstructor
@@ -19,27 +21,27 @@ public class VeiculoRequestDTO {
     private String placa;
     private String chassi;
     private String numeroMotor;
-    private String tipoVeiculo;
-    private String categoria;
-    private String especie;
-    private String anoModelo;
-    private String anoFabricacao;
-    private String combustivel;
-    private String cambio;
-    private String tipoTracao;
+    private TipoVeiculo tipoVeiculo;
+    private CategoriaVeiculo categoria;
+    private EspecieVeiculo especieVeiculo;
+    private LocalDate anoModelo;
+    private LocalDate anoFabricacao;
+    private Combustivel combustivel;
+    private Cambio cambio;
+    private TipoTracao tipoTracao;
     private String corPredominante;
-    private String carroceria;
+    private Carroceria carroceria;
     private Integer numeroEixos;
     private BigDecimal capacidadeCarga;
     private BigDecimal potenciaMotor;
     private BigDecimal cilindrada;
     private BigDecimal pesoBruto;
-    private String ufRegistro;
+    private UF ufRegistro;
     private String municipioRegistro;
-    private String situacaoVeiculo;
-    private String situacaoLicenciamento;
+    private SituacaoVeiculo situacaoVeiculo;
+    private SituacaoLicenciamento situacaoLicenciamento;
     private String restricaoJudicial;
-    private LocalDateTime dataPrimeiroLicenciamento;
+    private LocalDate dataPrimeiroLicenciamento;
     private String numeroCrv;
     private String numeroCrlv;
     private String tabelaFipe;

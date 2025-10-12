@@ -1,6 +1,6 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.models;
 
-import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.Privilegio;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.usuario.Privilegio;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;

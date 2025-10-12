@@ -4,7 +4,7 @@ import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.delegacia.CadastroRequestDTO
 import br.gov.pr.pc.dp.sistema_delegacia_civil.exceptions.file_storage.ResourceNotFoundException;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Delegacia;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Usuario;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.Privilegio;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.usuario.Privilegio;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.repositories.DelegaciaRepository;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.repositories.UsuarioRepository;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.utils.JwtUtil;

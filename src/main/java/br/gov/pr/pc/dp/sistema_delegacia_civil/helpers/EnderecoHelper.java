@@ -1,11 +1,9 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.helpers;
 
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.endereco.EnderecoRequestDTO;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.endereco.EnderecoResponseDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.exceptions.file_storage.ResourceNotFoundException;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Endereco;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.repositories.EnderecoRepository;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.services.EnderecoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +11,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class EnderecoHelper {
 
-    public static Endereco resolverEndereco(EnderecoRequestDTO dto, EnderecoRepository repository) {
+    public static Endereco resolverEnderecoRequestDTO(EnderecoRequestDTO dto, EnderecoRepository repository) {
         if (dto.getId() != null) {
             return repository.findById(dto.getId())
                     .orElseThrow(() -> new ResourceNotFoundException("Endereço não encontrado com ID: " + dto.getId()));
@@ -29,7 +27,7 @@ public class EnderecoHelper {
         return repository.save(novo);
     }
 
-    public static Endereco resolverEndereco(Endereco endereco, EnderecoRepository repository) {
+    public static Endereco resolverEntidadeEndereco(Endereco endereco, EnderecoRepository repository) {
         if (endereco.getId() != null) {
             return repository.findById(endereco.getId())
                     .orElseThrow(() -> new ResourceNotFoundException("Endereço não encontrado com ID: " + endereco.getId()));

@@ -1,6 +1,10 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.services;
 
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.delegacia.DelegaciaRequestDTO;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.delegacia.DelegaciaResponseDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.exceptions.file_storage.ResourceNotFoundException;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.helpers.EnderecoHelper;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.mappers.DelegaciaMapper;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Endereco;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Delegacia;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Usuario;
@@ -29,41 +33,35 @@ public class DelegaciaService {
     private final FileStorageService fileStorageService;
     private final String subFolder = "Imagens/Delegacia";
 
-    public List<Delegacia> listAllDelegacias() {
-        return delegaciaRepository.findAll();
-    }
-
-    public Delegacia getById(Long id) {
-        return delegaciaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Instituição não encontrada."));
+    @Transactional
+    public List<DelegaciaResponseDTO> listAll() {
+        return delegaciaRepository.findAll()
+                .stream()
+                .map(DelegaciaMapper::toResponseDTO)
+                .toList();
     }
 
     @Transactional
-    public Delegacia createDelegacia(Delegacia delegacia, String senha, MultipartFile imagem) {
-        delegaciaRepository.findByEmail(delegacia.getEmail()).ifPresent(i -> {
-            throw new IllegalArgumentException("E-mail já está em uso.");
-        });
+    public DelegaciaResponseDTO getById(Long id) {
+        Delegacia delegacia = delegaciaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Delegacia não encontrada"));
+        return DelegaciaMapper.toResponseDTO(delegacia);
+    }
 
-        if (delegacia.getEndereco() != null) {
-            Endereco endereco = delegacia.getEndereco().getId() == null
-                    ? enderecoRepository.save(delegacia.getEndereco())
-                    : enderecoRepository.findById(delegacia.getEndereco().getId())
-                    .map(existing -> {
-                        existing.setLogradouro(delegacia.getEndereco().getLogradouro());
-                        existing.setBairro(delegacia.getEndereco().getBairro());
-                        existing.setNumero(delegacia.getEndereco().getNumero());
-                        existing.setMunicipio(delegacia.getEndereco().getMunicipio());
-                        existing.setUf(delegacia.getEndereco().getUf());
-                        existing.setPais(delegacia.getEndereco().getPais());
-                        return enderecoRepository.save(existing);
-                    })
-                    .orElseThrow(() -> new ResourceNotFoundException("Endereço não encontrado."));
-            delegacia.setEndereco(endereco);
+    @Transactional
+    public DelegaciaResponseDTO createDelegacia(DelegaciaRequestDTO dto, MultipartFile imagem) {
+        if (delegaciaRepository.findByEmail(dto.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("E-mail já está em uso.");
         }
 
+        Delegacia delegacia = DelegaciaMapper.toEntity(dto);
+
+        delegacia.setEndereco(EnderecoHelper.resolverEnderecoRequestDTO(dto.getEndereco(), enderecoRepository));
+
+
         if (imagem != null && !imagem.isEmpty()) {
-            String fileName = fileStorageService.storeFile(imagem, subFolder);
-            delegacia.setImagemUrl(fileName);
+            String imagemUrl = fileStorageService.storeFile(imagem, subFolder);
+            delegacia.setImagemUrl(imagemUrl);
         }
 
         Delegacia novaDelegacia = delegaciaRepository.save(delegacia);
@@ -71,74 +69,61 @@ public class DelegaciaService {
         Usuario usuario = new Usuario();
         usuario.setNome(novaDelegacia.getNome());
         usuario.setEmail(novaDelegacia.getEmail());
-        usuario.setSenha(passwordEncoder.encode(senha));
+        usuario.setSenha(passwordEncoder.encode(dto.getSenha()));
         usuario.setPrivilegio(Privilegio.ADMIN_MASTER);
         usuario.setDelegacia(novaDelegacia);
-
         usuarioRepository.save(usuario);
 
-        return novaDelegacia;
+        return DelegaciaMapper.toResponseDTO(novaDelegacia);
     }
 
     @Transactional
-    public Delegacia updateDelegacia(Long id, Delegacia novaDelegacia, String senha, MultipartFile imagem) {
-        Delegacia delegaciaExistente = getById(id);
+    public DelegaciaResponseDTO updateDelegacia(Long id, DelegaciaRequestDTO dto, MultipartFile imagem) {
+        Delegacia delegaciaExistente = delegaciaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Delegacia não encontrada"));
 
-        if (!delegaciaExistente.getEmail().equals(novaDelegacia.getEmail())) {
+        if (!delegaciaExistente.getEmail().equals(dto.getEmail())) {
             Usuario usuario = usuarioRepository.findByEmail(delegaciaExistente.getEmail())
-                    .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado."));
-            usuario.setEmail(novaDelegacia.getEmail());
+                    .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+            usuario.setEmail(dto.getEmail());
             usuarioRepository.save(usuario);
         }
 
-        delegaciaExistente.setSecretaria(novaDelegacia.getSecretaria());
-        delegaciaExistente.setNome(novaDelegacia.getNome());
-        delegaciaExistente.setEmail(novaDelegacia.getEmail());
-        delegaciaExistente.setTelefoneFixo(novaDelegacia.getTelefoneFixo());
-        delegaciaExistente.setTelefoneCelular(novaDelegacia.getTelefoneCelular());
+        delegaciaExistente.setNome(dto.getNome());
+        delegaciaExistente.setEmail(dto.getEmail());
+        delegaciaExistente.setSecretaria(dto.getSecretaria());
+        delegaciaExistente.setTelefoneFixo(dto.getTelefoneFixo());
+        delegaciaExistente.setTelefoneCelular(dto.getTelefoneCelular());
 
-        if (novaDelegacia.getEndereco() != null) {
-            Endereco endereco = enderecoRepository.findById(novaDelegacia.getEndereco().getId())
-                    .map(existing -> {
-                        existing.setLogradouro(novaDelegacia.getEndereco().getLogradouro());
-                        existing.setBairro(novaDelegacia.getEndereco().getBairro());
-                        existing.setNumero(novaDelegacia.getEndereco().getNumero());
-                        existing.setMunicipio(novaDelegacia.getEndereco().getMunicipio());
-                        existing.setUf(novaDelegacia.getEndereco().getUf());
-                        existing.setPais(novaDelegacia.getEndereco().getPais());
-                        return enderecoRepository.save(existing);
-                    })
-                    .orElseThrow(() -> new ResourceNotFoundException("Endereço não encontrado."));
-            delegaciaExistente.setEndereco(endereco);
-        }
+        delegaciaExistente.setEndereco(EnderecoHelper.resolverEnderecoRequestDTO(dto.getEndereco(), enderecoRepository));
 
-        if (senha != null && !senha.isBlank()) {
+
+        if (dto.getSenha() != null && !dto.getSenha().isBlank()) {
             Usuario usuario = usuarioRepository.findByEmail(delegaciaExistente.getEmail())
-                    .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado."));
-            usuario.setSenha(passwordEncoder.encode(senha));
+                    .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+            usuario.setSenha(passwordEncoder.encode(dto.getSenha()));
             usuarioRepository.save(usuario);
         }
 
         if (imagem != null && !imagem.isEmpty()) {
-
             String imagemUrl = fileStorageService.storeFile(imagem, subFolder);
             delegaciaExistente.setImagemUrl(imagemUrl);
         }
 
-        return delegaciaRepository.save(delegaciaExistente);
+        Delegacia atualizado = delegaciaRepository.save(delegaciaExistente);
+        return DelegaciaMapper.toResponseDTO(atualizado);
     }
 
     @Transactional
     public void deleteDelegacia(Long id) {
-        Delegacia delegacia = getById(id);
+        Delegacia delegacia = delegaciaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Delegacia não encontrada"));
 
-        List<Usuario> usuariosVinculados = usuarioRepository.findByDelegaciaId(delegacia);
-        if (!usuariosVinculados.isEmpty()) {
-            usuarioRepository.deleteAll(usuariosVinculados);
-            log.info("Usuários vinculados à instituição {} removidos com sucesso", id);
+        List<Usuario> usuarios = usuarioRepository.findByDelegaciaId(delegacia);
+        if (!usuarios.isEmpty()) {
+            usuarioRepository.deleteAll(usuarios);
         }
 
         delegaciaRepository.delete(delegacia);
-        log.info("Instituição deletada: ID={}, Nome={}", delegacia.getId(), delegacia.getNome());
     }
 }

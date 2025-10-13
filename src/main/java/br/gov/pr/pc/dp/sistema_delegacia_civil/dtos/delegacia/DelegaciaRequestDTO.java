@@ -20,6 +20,5 @@ public class DelegaciaRequestDTO {
     private String imagemUrl;
     private EnderecoRequestDTO endereco;
     private String senha;
-
 }
 

@@ -4,7 +4,9 @@ import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.delegacia.DelegaciaRequestDT
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.delegacia.DelegaciaResponseDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.endereco.EnderecoResponseDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Delegacia;
+import org.springframework.stereotype.Component;
 
+@Component
 public class DelegaciaMapper {
 
     public static DelegaciaResponseDTO toResponseDTO(Delegacia delegacia) {

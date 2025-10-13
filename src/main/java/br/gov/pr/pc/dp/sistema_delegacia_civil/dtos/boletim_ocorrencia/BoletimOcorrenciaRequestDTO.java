@@ -1,10 +1,9 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.boletim_ocorrencia;
 
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.bem_envolvimento.BemEnvolvimentoRequestDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.endereco.EnderecoRequestDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.pessoa_envolvimento.PessoaEnvolvimentoRequestDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.delegacia.OrigemForcaPolicial;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.models.BoletimOcorrencia;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Delegacia;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,5 +25,6 @@ public class BoletimOcorrenciaRequestDTO {
     private EnderecoRequestDTO endereco;
     private Long delegaciaId;
     private List<PessoaEnvolvimentoRequestDTO> pessoasEnvolvidas = new ArrayList<>();
+    private List<BemEnvolvimentoRequestDTO> bensEnvolvidos = new ArrayList<>();
     
 }

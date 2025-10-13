@@ -1,5 +1,6 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.boletim_ocorrencia;
 
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.bem_envolvimento.BemEnvolvimentoResponseDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.endereco.EnderecoResponseDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.pessoa_envolvimento.PessoaEnvolvimentoResponseDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.delegacia.OrigemForcaPolicial;
@@ -27,5 +28,7 @@ public class BoletimOcorrenciaResponseDTO {
     private EnderecoResponseDTO endereco;
     private Long delegaciaId;
     private List<PessoaEnvolvimentoResponseDTO> pessoasEnvolvidas = new ArrayList<>();
+    private List<BemEnvolvimentoResponseDTO> bensEnvolvidos = new ArrayList<>();
+
 
 }

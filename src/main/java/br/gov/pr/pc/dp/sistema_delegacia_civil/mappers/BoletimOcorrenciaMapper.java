@@ -2,10 +2,7 @@ package br.gov.pr.pc.dp.sistema_delegacia_civil.mappers;
 
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.boletim_ocorrencia.BoletimOcorrenciaRequestDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.boletim_ocorrencia.BoletimOcorrenciaResponseDTO;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.models.BoletimOcorrencia;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Delegacia;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Pessoa;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.models.PessoaEnvolvimento;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.models.*;
 
 import java.util.Collections;
 
@@ -49,6 +46,23 @@ public class BoletimOcorrenciaMapper {
             );
         }
 
+        if (dto.getBensEnvolvidos() != null) {
+            entity.setBensEnvolvidos(
+                    dto.getBensEnvolvidos().stream()
+                            .map(pe -> {
+                                BemEnvolvimento envolvimento = new BemEnvolvimento();
+
+                                Bem bem = new Bem();
+                                bem.setId(pe.getBemId());
+                                envolvimento.setBem(bem);
+
+                                envolvimento.setTipoEnvolvimento(pe.getTipoEnvolvimento());
+                                return envolvimento;
+                            })
+                            .toList()
+            );
+        }
+
         return entity;
     }
 
@@ -73,6 +87,17 @@ public class BoletimOcorrenciaMapper {
                     entity.getPessoasEnvolvidas() != null ?
                             entity.getPessoasEnvolvidas().stream()
                                     .map(PessoaEnvolvimentoMapper::toResponseDTO)
+                                    .toList()
+                            : Collections.emptyList()
+            );
+
+        }
+
+        if (entity.getBensEnvolvidos() != null) {
+            dto.setBensEnvolvidos(
+                    entity.getBensEnvolvidos() != null ?
+                            entity.getBensEnvolvidos().stream()
+                                    .map(BemEnvolvimentoMapper::toResponseDTO)
                                     .toList()
                             : Collections.emptyList()
             );

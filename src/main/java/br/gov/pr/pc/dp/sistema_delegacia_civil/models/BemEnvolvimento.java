@@ -1,14 +1,21 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.models;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
 @Data
 @Entity
 @Table(name = "bem_envolvimento")
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class BemEnvolvimento {
 
     @Id
@@ -32,5 +39,5 @@ public class BemEnvolvimento {
 
     @CreationTimestamp
     @Column(name = "data_envolvimento", columnDefinition = "TIMESTAMP WITH TIME ZONE")
-    private OffsetDateTime dataEnvolvimento;
+    private LocalDate dataEnvolvimento;
 }

@@ -1,14 +1,18 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.services;
 
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.boletim_ocorrencia.BoletimOcorrenciaRequestDTO;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.boletim_ocorrencia.BoletimOcorrenciaResponseDTO;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.helpers.BemEnvolvimentoHelper;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.helpers.EnderecoHelper;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.helpers.PessoaEnvolvimentoHelper;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.mappers.BoletimOcorrenciaMapper;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.*;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.repositories.BoletimOcorrenciaRepository;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.helpers.EntityHelper;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.repositories.EnderecoRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,46 +25,58 @@ public class BoletimOcorrenciaService {
     private final BoletimOcorrenciaRepository boletimRepository;
     private final EntityHelper entityHelper;
     private final EnderecoHelper enderecoHelper;
+    private final BemEnvolvimentoHelper bemEnvolvimentoHelper;
     private final PessoaEnvolvimentoHelper pessoaEnvolvimentoHelper;
+    private final EnderecoRepository enderecoRepository;
 
     @Transactional
-    public List<BoletimOcorrencia> findAll() {
-        return boletimRepository.findAll();
+    public List<BoletimOcorrenciaResponseDTO> findAll() {
+        return boletimRepository.findAll().stream()
+                .map(BoletimOcorrenciaMapper::toResponseDTO)
+                .toList();
     }
 
     @Transactional
-    public BoletimOcorrencia findById(Long id) {
+    public BoletimOcorrenciaResponseDTO findById(Long id) {
         entityHelper.validarBoletimExistente(id);
-        return boletimRepository.findById(id).orElseThrow();
+        BoletimOcorrencia boletim = boletimRepository.findById(id).orElseThrow();
+        return BoletimOcorrenciaMapper.toResponseDTO(boletim);
     }
 
     @Transactional
-    public List<BoletimOcorrencia> getBoletinsByDelegacia(Long delegaciaId) {
+    public List<BoletimOcorrenciaResponseDTO> getBoletinsByDelegacia(Long delegaciaId) {
         entityHelper.validarDelegaciaExistente(delegaciaId);
-        return boletimRepository.findByDelegaciaId(delegaciaId);
+        return boletimRepository.findByDelegaciaId(delegaciaId).stream()
+                .map(BoletimOcorrenciaMapper::toResponseDTO)
+                .toList();
     }
 
     @Transactional
-    public BoletimOcorrencia createBoletimOcorrencia(BoletimOcorrenciaRequestDTO requestDTO) {
+    public BoletimOcorrenciaResponseDTO createBoletimOcorrencia(BoletimOcorrenciaRequestDTO requestDTO) {
 
         BoletimOcorrencia boletim = BoletimOcorrenciaMapper.toEntity(requestDTO);
         entityHelper.validarDelegaciaExistente(boletim.getDelegacia().getId());
-//        boletim.setEndereco(enderecoHelper.resolverEndereco(requestDTO.getEndereco()));
+        boletim.setEndereco(enderecoHelper.resolverEnderecoRequestDTO(requestDTO.getEndereco(), enderecoRepository));
 
         BoletimOcorrencia salvo = boletimRepository.save(boletim);
 
         List<PessoaEnvolvimento> envolvimentos =
                 pessoaEnvolvimentoHelper.mapearPessoas(requestDTO.getPessoasEnvolvidas(), salvo);
+        List<BemEnvolvimento> bemEnvolvimentos =
+                bemEnvolvimentoHelper.mapearBensPorBoletimDeOcorrencia(requestDTO.getBensEnvolvidos(), salvo);
 
         salvo.setPessoasEnvolvidas(new ArrayList<>(envolvimentos));
+        salvo.setBensEnvolvidos(new ArrayList<>(bemEnvolvimentos));
 
-        return boletimRepository.save(salvo);
+        boletimRepository.save(salvo);
+
+        return BoletimOcorrenciaMapper.toResponseDTO(salvo);
     }
 
     @Transactional
-    public BoletimOcorrencia updateBoletim(Long id, BoletimOcorrenciaRequestDTO requestDTO) {
+    public BoletimOcorrenciaResponseDTO updateBoletim(Long id, BoletimOcorrenciaRequestDTO requestDTO) {
 
-        BoletimOcorrencia existing = findById(id);
+        BoletimOcorrencia existing = boletimRepository.findById(id).orElseThrow();
         BoletimOcorrencia boletimAtualizado = BoletimOcorrenciaMapper.toEntity(requestDTO);
 
         if (boletimAtualizado.getDelegacia() != null && boletimAtualizado.getDelegacia().getId() != null) {
@@ -74,13 +90,19 @@ public class BoletimOcorrenciaService {
         existing.setNatureza(boletimAtualizado.getNatureza());
         existing.setRepresentacao(boletimAtualizado.getRepresentacao());
 
-//        existing.setEndereco(enderecoHelper.resolverEndereco(requestDTO.getEndereco()));
-
+        // Atualiza pessoas envolvidas
         List<PessoaEnvolvimento> envolvimentos =
                 pessoaEnvolvimentoHelper.mapearPessoas(requestDTO.getPessoasEnvolvidas(), existing);
         existing.setPessoasEnvolvidas(new ArrayList<>(envolvimentos));
 
-        return boletimRepository.save(existing);
+        // Atualiza bens envolvidos
+        List<BemEnvolvimento> bensEnvolvidos =
+                bemEnvolvimentoHelper.mapearBensPorBoletimDeOcorrencia(requestDTO.getBensEnvolvidos(), existing);
+        existing.setBensEnvolvidos(new ArrayList<>(bensEnvolvidos));
+
+        BoletimOcorrencia atualizado = boletimRepository.save(existing);
+
+        return BoletimOcorrenciaMapper.toResponseDTO(atualizado);
     }
 
     @Transactional

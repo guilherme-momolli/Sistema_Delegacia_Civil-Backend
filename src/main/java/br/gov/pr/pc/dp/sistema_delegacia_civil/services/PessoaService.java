@@ -11,19 +11,16 @@ import org.springframework.data.domain.Page;
 
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.pessoa.PessoaFiltroDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.exceptions.file_storage.ResourceNotFoundException;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Endereco;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Pessoa;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.repositories.EnderecoRepository;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.repositories.PessoaRepository;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.specifications.PessoaSpecification;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.validators.pessoa.CpfValidator;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -63,8 +60,7 @@ public class PessoaService {
         pessoaRepository.findByCpf(pessoa.getCpf())
                 .ifPresent(p -> { throw new IllegalArgumentException("CPF já cadastrado."); });
 
-        pessoa.setEndereco(EnderecoHelper.resolverEndereco(dto.getEndereco(), enderecoRepository));
-
+        pessoa.setEndereco(EnderecoHelper.resolverEnderecoRequestDTO(dto.getEndereco(), enderecoRepository));
 
         if (imagem != null && !imagem.isEmpty()) {
             String nomeArquivo = fileStorageService.storeFile(imagem, subFolder);
@@ -89,7 +85,7 @@ public class PessoaService {
         }
 
 
-        pessoaAtualizada.setEndereco(EnderecoHelper.resolverEndereco(dto.getEndereco(), enderecoRepository));
+        pessoaAtualizada.setEndereco(EnderecoHelper.resolverEnderecoRequestDTO(dto.getEndereco(), enderecoRepository));
 
         return PessoaMapper.toResponseDTO(pessoaRepository.save(pessoaAtualizada));
     }

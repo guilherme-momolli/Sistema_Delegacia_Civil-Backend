@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
@@ -55,6 +56,11 @@ public class InqueritoPolicial {
     @JsonManagedReference("inquerito-pessoas")
     @ToString.Exclude
     private List<PessoaEnvolvimento> pessoasEnvolvidas = new ArrayList<>();
+
+    @OneToMany(mappedBy = "inqueritoPolicial", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("inquerito-pessoas")
+    @ToString.Exclude
+    private List<BemEnvolvimento> bensEnvolvidos = new ArrayList<>();
 
     @Column(name = "natureza_do_delito")
     private String naturezaDoDelito;

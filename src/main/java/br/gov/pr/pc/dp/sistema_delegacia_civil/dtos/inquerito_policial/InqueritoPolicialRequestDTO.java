@@ -1,5 +1,6 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.inquerito_policial;
 
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.bem_envolvimento.BemEnvolvimentoRequestDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.pessoa_envolvimento.PessoaEnvolvimentoRequestDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.delegacia.OrigemForcaPolicial;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.delegacia.Peca;
@@ -28,5 +29,6 @@ public class InqueritoPolicialRequestDTO {
     private String observacao;
     private Long delegaciaId;
     private List<PessoaEnvolvimentoRequestDTO> pessoasEnvolvidas = new ArrayList<>();
+    private List<BemEnvolvimentoRequestDTO> bensEnvolvidos = new ArrayList<>();
 
 }

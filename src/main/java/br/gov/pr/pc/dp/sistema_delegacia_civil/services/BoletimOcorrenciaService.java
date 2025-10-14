@@ -90,12 +90,10 @@ public class BoletimOcorrenciaService {
         existing.setNatureza(boletimAtualizado.getNatureza());
         existing.setRepresentacao(boletimAtualizado.getRepresentacao());
 
-        // Atualiza pessoas envolvidas
         List<PessoaEnvolvimento> envolvimentos =
                 pessoaEnvolvimentoHelper.mapearPessoas(requestDTO.getPessoasEnvolvidas(), existing);
         existing.setPessoasEnvolvidas(new ArrayList<>(envolvimentos));
 
-        // Atualiza bens envolvidos
         List<BemEnvolvimento> bensEnvolvidos =
                 bemEnvolvimentoHelper.mapearBensPorBoletimDeOcorrencia(requestDTO.getBensEnvolvidos(), existing);
         existing.setBensEnvolvidos(new ArrayList<>(bensEnvolvidos));

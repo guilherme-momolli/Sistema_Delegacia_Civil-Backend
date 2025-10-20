@@ -106,7 +106,11 @@ public class DelegaciaController {
     })
     @DeleteMapping("delete/{id}")
     public ResponseEntity<Void> deletarDelegacia(@PathVariable Long id) {
-        delegaciaService.deleteDelegacia(id);
-        return ResponseEntity.noContent().build();
+        try {
+            delegaciaService.deleteDelegacia(id);
+            return ResponseEntity.noContent().build();
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

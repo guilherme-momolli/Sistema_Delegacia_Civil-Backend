@@ -31,7 +31,7 @@ public class DelegaciaService {
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     private final FileStorageService fileStorageService;
-    private final String subFolder = "Imagens/Delegacia";
+    private final String subFolder = "Imagens/Delegacias";
 
     @Transactional
     public List<DelegaciaResponseDTO> listAll() {
@@ -119,7 +119,7 @@ public class DelegaciaService {
         Delegacia delegacia = delegaciaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Delegacia não encontrada"));
 
-        List<Usuario> usuarios = usuarioRepository.findByDelegaciaId(delegacia);
+        List<Usuario> usuarios = usuarioRepository.findByDelegaciaId(delegacia.getId());
         if (!usuarios.isEmpty()) {
             usuarioRepository.deleteAll(usuarios);
         }

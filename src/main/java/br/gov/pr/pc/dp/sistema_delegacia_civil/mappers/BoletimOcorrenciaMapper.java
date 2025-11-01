@@ -1,10 +1,16 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.mappers;
 
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.boletim_ocorrencia.BoletimOcorrenciaDashboardResponseDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.boletim_ocorrencia.BoletimOcorrenciaRequestDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.boletim_ocorrencia.BoletimOcorrenciaResponseDTO;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.delegacia.OrigemForcaPolicial;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.delegacia.SituacaoInquerito;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.*;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class BoletimOcorrenciaMapper {
 
@@ -105,5 +111,16 @@ public class BoletimOcorrenciaMapper {
         }
 
         return dto;
+    }
+
+
+    public static BoletimOcorrenciaDashboardResponseDTO toBoletimDashboard(List<BoletimOcorrencia> boletins) {
+        long totalBoletins = boletins.size();
+
+        Map<OrigemForcaPolicial, Long> totalPorOrigem = boletins.stream()
+                .collect(Collectors.groupingBy(BoletimOcorrencia::getOrigemForcaPolicial, Collectors.counting()));
+
+
+        return new BoletimOcorrenciaDashboardResponseDTO(totalBoletins, totalPorOrigem);
     }
 }

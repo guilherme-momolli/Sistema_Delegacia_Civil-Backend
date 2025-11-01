@@ -12,20 +12,6 @@ CREATE TABLE endereco (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE instituicao (
-    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    imagem_url VARCHAR(255),
-    tipo_empresa VARCHAR(50),
-    razao_social VARCHAR(255),
-    nome_fantasia VARCHAR(255),
-    cnpj VARCHAR(14) UNIQUE,
-    email VARCHAR(255),
-    telefone_fixo VARCHAR(20),
-    telefone_celular VARCHAR(20),
-    endereco_id BIGINT NOT NULL REFERENCES endereco(id),
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
 
 CREATE TABLE delegacia (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -62,7 +48,6 @@ CREATE TABLE pessoa (
     endereco_id BIGINT REFERENCES endereco(id),
     etnia VARCHAR(50),
     situacao_pessoa VARCHAR(50),
-    instituicao_id BIGINT REFERENCES instituicao(id),
     ativo BOOLEAN DEFAULT true,
     faccao varchar(50),
    	cargo_faccao varchar(50),
@@ -77,7 +62,6 @@ CREATE TABLE usuario (
     email VARCHAR(100) UNIQUE,
     senha VARCHAR(255),
     privilegio VARCHAR(50),
-    pessoa_id BIGINT REFERENCES pessoa(id),
     delegacia_id BIGINT REFERENCES delegacia(id),
     ativo BOOLEAN DEFAULT true,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -125,7 +109,6 @@ CREATE TABLE bem (
     valor_estimado NUMERIC(15,2),
     pessoa_id BIGINT,
     delegacia_id BIGINT,
-    instituicao_id BIGINT,
     situacao_bem VARCHAR(50),
     origem VARCHAR(100),
     numero_lacre VARCHAR(50),
@@ -136,20 +119,7 @@ CREATE TABLE bem (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_bem_pessoa FOREIGN KEY (pessoa_id) REFERENCES pessoa(id),
-    CONSTRAINT fk_bem_delegacia FOREIGN KEY (delegacia_id) REFERENCES delegacia(id),
-    CONSTRAINT fk_bem_instituicao FOREIGN KEY (instituicao_id) REFERENCES instituicao(id)
-);
-
-CREATE TABLE bem_envolvimento (
-    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    bem_id BIGINT NOT NULL,
-    boletim_id BIGINT,
-    inquerito_id BIGINT,
-    tipo_envolvimento VARCHAR(50),
-    data_envolvimento TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_bem_envolvimento_bem FOREIGN KEY (bem_id) REFERENCES bem(id),
-    CONSTRAINT fk_bem_envolvimento_boletim FOREIGN KEY (boletim_id) REFERENCES boletim_ocorrencia(id),
-    CONSTRAINT fk_bem_envolvimento_inquerito FOREIGN KEY (inquerito_id) REFERENCES inquerito_policial(id)
+    CONSTRAINT fk_bem_delegacia FOREIGN KEY (delegacia_id) REFERENCES delegacia(id)
 );
 
 CREATE TABLE objeto (
@@ -162,8 +132,6 @@ CREATE TABLE objeto (
     dimensoes VARCHAR(100),
     estado_conservacao VARCHAR(25),
     situacao_objeto VARCHAR(50),
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_objeto_bem FOREIGN KEY (bem_id) REFERENCES bem(id)
 );
 
@@ -198,8 +166,6 @@ CREATE TABLE veiculo (
     numero_crv VARCHAR(50),
     numero_crlv VARCHAR(50),
     tabela_fipe VARCHAR(50),
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_veiculo_bem FOREIGN KEY (bem_id) REFERENCES bem(id)
 );
 
@@ -209,9 +175,9 @@ CREATE TABLE droga (
     tipo_droga VARCHAR(50),
     nome_popular VARCHAR(255),
     unidade_medida VARCHAR(50),
+    peso_bruto NUMERIC(10, 3),
+    quantidade INT,
     quantidade_por_extenso TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_droga_bem FOREIGN KEY (bem_id) REFERENCES bem(id)
 );
 
@@ -225,22 +191,21 @@ CREATE TABLE arma (
     numero_serie VARCHAR(100),
     numero_registro VARCHAR(100),
     capacidade VARCHAR(50),
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_arma_bem FOREIGN KEY (bem_id) REFERENCES bem(id)
 );
 
-CREATE TABLE bem_movimentacao (
+CREATE TABLE bem_envolvimento (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     bem_id BIGINT NOT NULL,
-    origem VARCHAR(50),
-    destino_delegacia_id BIGINT,
-    data_movimentacao TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    observacao TEXT,
-    usuario_responsavel_id BIGINT,
-    CONSTRAINT fk_mov_bem FOREIGN KEY (bem_id) REFERENCES bem(id),
-    CONSTRAINT fk_mov_destino FOREIGN KEY (destino_delegacia_id) REFERENCES delegacia(id),
-    CONSTRAINT fk_mov_usuario FOREIGN KEY (usuario_responsavel_id) REFERENCES usuario(id)
+    boletim_id BIGINT,
+    inquerito_id BIGINT,
+    tipo_envolvimento VARCHAR(50),
+    data_envolvimento TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_bem_envolvimento_bem FOREIGN KEY (bem_id) REFERENCES bem(id),
+    CONSTRAINT fk_bem_envolvimento_boletim FOREIGN KEY (boletim_id) REFERENCES boletim_ocorrencia(id),
+    CONSTRAINT fk_bem_envolvimento_inquerito FOREIGN KEY (inquerito_id) REFERENCES inquerito_policial(id)
 );
 
 CREATE TABLE pessoa_envolvimento (
@@ -255,13 +220,12 @@ CREATE TABLE pessoa_envolvimento (
     CONSTRAINT fk_pessoa_envolvimento_pessoa FOREIGN KEY (pessoa_id) REFERENCES pessoa(id),
     CONSTRAINT fk_pessoa_envolvimento_boletim_ocorrencia FOREIGN KEY (boletim_id) REFERENCES boletim_ocorrencia(id),
     CONSTRAINT fk_pessoa_envolvimento_inquerito_policial FOREIGN KEY (inquerito_id) REFERENCES inquerito_policial(id)
---    CONSTRAINT uk_pessoa_envolvimento UNIQUE (pessoa_id, boletim_id, inquerito_id)
 );
 
-CREATE INDEX idx_veiculo_placa ON veiculo(placa);
-CREATE INDEX idx_inquerito_delegacia ON inquerito_policial(delegacia_id);
-CREATE INDEX idx_endereco_cep ON endereco(cep);
-CREATE INDEX idx_endereco_regiao ON endereco(regiao_administrativa);
-CREATE INDEX idx_boletim_ocorrencia_boletim ON boletim_ocorrencia(boletim);
-CREATE INDEX idx_boletim_delegacia ON boletim_ocorrencia(delegacia_id);
-CREATE INDEX idx_usuario_delegacia ON usuario(delegacia_id);
+--CREATE INDEX idx_veiculo_placa ON veiculo(placa);
+--CREATE INDEX idx_inquerito_delegacia ON inquerito_policial(del	egacia_id);
+--CREATE INDEX idx_endereco_cep ON endereco(cep);
+--CREATE INDEX idx_endereco_regiao ON endereco(regiao_administrativa);
+--CREATE INDEX idx_boletim_ocorrencia_boletim ON boletim_ocorrencia(boletim);
+--CREATE INDEX idx_boletim_delegacia ON boletim_ocorrencia(delegacia_id);
+--CREATE INDEX idx_usuario_delegacia ON usuario(delegacia_id);

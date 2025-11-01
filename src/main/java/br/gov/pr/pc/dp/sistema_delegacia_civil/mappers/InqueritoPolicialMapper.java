@@ -1,11 +1,16 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.mappers;
 
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.boletim_ocorrencia.BoletimOcorrenciaResponseDTO;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.inquerito_policial.InqueritoPolicialDashboardResponseDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.inquerito_policial.InqueritoPolicialRequestDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.inquerito_policial.InqueritoPolicialResponseDTO;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.delegacia.OrigemForcaPolicial;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.delegacia.SituacaoInquerito;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.*;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class InqueritoPolicialMapper {
@@ -118,5 +123,17 @@ public class InqueritoPolicialMapper {
         }
 
         return dto;
+    }
+
+    public static InqueritoPolicialDashboardResponseDTO toInqueritoDashboard(List<InqueritoPolicial> inqueritos) {
+        long totalInqueritos = inqueritos.size();
+
+        Map<SituacaoInquerito, Long> totalPorSituacaoInquerito = inqueritos.stream()
+                .collect(Collectors.groupingBy(InqueritoPolicial::getSituacaoInquerito, Collectors.counting()));
+
+        Map<OrigemForcaPolicial, Long> totalPorOrigem = inqueritos.stream()
+                .collect(Collectors.groupingBy(InqueritoPolicial::getOrigemForcaPolicial, Collectors.counting()));
+
+        return new InqueritoPolicialDashboardResponseDTO(totalInqueritos, totalPorOrigem, totalPorSituacaoInquerito);
     }
 }

@@ -73,7 +73,7 @@ public class PessoaController {
             @ApiResponse(responseCode = "201", description = "Pessoa criada com sucesso"),
             @ApiResponse(responseCode = "400", description = "Erro nos dados enviados", content = @Content)
     })
-    @PostMapping(consumes = {"multipart/form-data"})
+    @PostMapping(path = "/create",consumes = {"multipart/form-data"})
     public ResponseEntity<PessoaResponseDTO> cadastrarPessoa(
             @RequestPart("pessoa") String pessoaJson,
             @RequestPart(value = "imagem", required = false) MultipartFile imagem) {
@@ -97,7 +97,7 @@ public class PessoaController {
             @ApiResponse(responseCode = "404", description = "Pessoa não encontrada"),
             @ApiResponse(responseCode = "400", description = "Dados inválidos ou conflito de CPF")
     })
-    @PutMapping(value = "/{id}", consumes = {"multipart/form-data"})
+    @PutMapping(path = "/update/{id}", consumes = {"multipart/form-data"})
     public ResponseEntity<PessoaResponseDTO> atualizarPessoa(
             @PathVariable Long id,
             @RequestPart("pessoa") String pessoaJson,

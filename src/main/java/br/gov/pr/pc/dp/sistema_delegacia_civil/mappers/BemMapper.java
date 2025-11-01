@@ -1,15 +1,24 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.mappers;
 
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.arma.ArmaDashboardResponseDTO;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.bem.BemDashboardResponseDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.bem.BemRequestDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.bem.BemResponseDTO;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.droga.DrogaDashboardResponseDTO;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.veiculo.VeiculoDashboardResponseDTO;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.bem.SituacaoBem;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.bem.TipoBem;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Bem;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Delegacia;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Instituicao;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Pessoa;
 import org.springframework.stereotype.Component;
 
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.*;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -36,6 +45,16 @@ public class BemMapper {
         bem.setLocalBem(dto.getLocalBem());
         bem.setObservacao(dto.getObservacao());
         bem.setDescricao(dto.getDescricao());
+        if (dto.getPessoaId() != null) {
+            Pessoa pessoa = new Pessoa();
+            pessoa.setId(dto.getPessoaId());
+            bem.setPessoa(pessoa);
+        }
+        if (dto.getDelegaciaId() != null) {
+            Delegacia delegacia = new Delegacia();
+            delegacia.setId(dto.getDelegaciaId());
+            bem.setDelegacia(delegacia);
+        }
 
         if (dto.getTipoBem() != null) {
             switch (dto.getTipoBem()) {
@@ -89,10 +108,11 @@ public class BemMapper {
         dto.setLocalBem(bem.getLocalBem());
         dto.setObservacao(bem.getObservacao());
         dto.setDescricao(bem.getDescricao());
+        dto.setCreatedAt(bem.getCreatedAt());
+        dto.setUpdatedAt(bem.getUpdatedAt());
 
         if (bem.getPessoa() != null) dto.setPessoaId(bem.getPessoa().getId());
         if (bem.getDelegacia() != null) dto.setDelegaciaId(bem.getDelegacia().getId());
-        if (bem.getInstituicao() != null) dto.setInstituicaoId(bem.getInstituicao().getId());
 
         if (bem.getArma() != null) dto.setArma(ArmaMapper.toResponseDTO(bem.getArma()));
         if (bem.getObjeto() != null) dto.setObjeto(ObjetoMapper.toResponseDTO(bem.getObjeto()));
@@ -127,11 +147,54 @@ public class BemMapper {
             bem.setDelegacia(delegacia);
         }
 
-        if (dto.getInstituicaoId() != null) {
-            Instituicao instituicao = new Instituicao();
-            instituicao.setId(dto.getInstituicaoId());
-            bem.setInstituicao(instituicao);
+        // 🔹 Atualização de campos específicos conforme o tipo do bem
+        if (dto.getTipoBem() != null) {
+            switch (dto.getTipoBem()) {
+                case ARMA -> {
+                    if (dto.getArma() != null) {
+                        if (bem.getArma() == null) bem.setArma(new Arma());
+                        ArmaMapper.toUpdate(dto.getArma(), bem.getArma());
+                    }
+                }
+                case OBJETO -> {
+                    if (dto.getObjeto() != null) {
+                        if (bem.getObjeto() == null) bem.setObjeto(new Objeto());
+                        ObjetoMapper.toUpdate(dto.getObjeto(), bem.getObjeto());
+                    }
+                }
+                case VEICULO -> {
+                    if (dto.getVeiculo() != null) {
+                        if (bem.getVeiculo() == null) bem.setVeiculo(new Veiculo());
+                        VeiculoMapper.toUpdate(dto.getVeiculo(), bem.getVeiculo());
+                    }
+                }
+                case DROGA -> {
+                    if (dto.getDroga() != null) {
+                        if (bem.getDroga() == null) bem.setDroga(new Droga());
+                        DrogaMapper.toUpdate(dto.getDroga(), bem.getDroga());
+                    }
+                }
+            }
         }
+    }
+
+    public static BemDashboardResponseDTO toBemDashboard(List<Bem> bens){
+        long totalBens = bens.size();
+
+        Map<SituacaoBem, Long> totalPorSituacaoBem = bens.stream()
+                .collect(Collectors.groupingBy(Bem::getSituacaoBem, Collectors.counting()));
+
+
+        Map<TipoBem, Long> totalPorTipoBem = bens.stream()
+                .collect(Collectors.groupingBy(Bem::getTipoBem, Collectors.counting()));
+
+        ArmaDashboardResponseDTO armaDashboardResponseDTO = new ArmaDashboardResponseDTO();
+        DrogaDashboardResponseDTO drogaDashboardResponseDTO = new DrogaDashboardResponseDTO();
+        VeiculoDashboardResponseDTO veiculoDashboardResponseDTO = new VeiculoDashboardResponseDTO();
+
+
+        return new BemDashboardResponseDTO(totalBens, totalPorTipoBem, totalPorSituacaoBem, armaDashboardResponseDTO, drogaDashboardResponseDTO, veiculoDashboardResponseDTO);
+
     }
 }
 

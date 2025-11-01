@@ -7,8 +7,5 @@ public enum SituacaoDroga {
     PERICIADA,
     DESTRUICAO_AUTORIZADA,
     DESTRUICAO_REALIZADA,
-    ARMAZENADA,
-    DEVOLVIDA,
-    OUTRA;
-
+    ARMAZENADA;
 }

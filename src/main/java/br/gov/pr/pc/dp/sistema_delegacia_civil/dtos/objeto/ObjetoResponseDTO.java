@@ -23,6 +23,4 @@ public class ObjetoResponseDTO {
     private String dimensoes;
     private String estadoConservacao;
     private String situacaoObjeto;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }

@@ -1,5 +1,6 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.services;
 
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.inquerito_policial.InqueritoPolicialDashboardResponseDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.inquerito_policial.InqueritoPolicialRequestDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.inquerito_policial.InqueritoPolicialResponseDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.helpers.BemEnvolvimentoHelper;
@@ -49,6 +50,12 @@ public class InqueritoPolicialService {
                 .map(InqueritoPolicialMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
+
+    public InqueritoPolicialDashboardResponseDTO getInqueritoResumo() {
+        List<InqueritoPolicial> inqueritos = this.inqueritoRepository.findAll();
+        return InqueritoPolicialMapper.toInqueritoDashboard(inqueritos);
+    }
+
 
     @Transactional
     public InqueritoPolicialResponseDTO createInqueritoPolicial(InqueritoPolicialRequestDTO requestDTO) {

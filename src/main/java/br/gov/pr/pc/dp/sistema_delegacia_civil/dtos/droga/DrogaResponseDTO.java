@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -16,8 +17,7 @@ public class DrogaResponseDTO {
     private Long bemId;
     private TipoDroga tipoDroga;
     private String nomePopular;
-    private UnidadeMedida unidadeMedida;
+    private BigDecimal quantidade;
     private String quantidadePorExtenso;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private UnidadeMedida unidadeMedida;
 }

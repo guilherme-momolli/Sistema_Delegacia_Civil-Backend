@@ -30,5 +30,4 @@ public class BoletimOcorrenciaResponseDTO {
     private List<PessoaEnvolvimentoResponseDTO> pessoasEnvolvidas = new ArrayList<>();
     private List<BemEnvolvimentoResponseDTO> bensEnvolvidos = new ArrayList<>();
 
-
 }

@@ -2,6 +2,7 @@ package br.gov.pr.pc.dp.sistema_delegacia_civil.models;
 
 import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.arma.Calibre;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.arma.EspecieArma;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.arma.SituacaoArmaFogo;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.arma.TipoArmaFogo;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -26,6 +27,10 @@ public class Arma {
     @Column(name = "tipo_arma_fogo", length = 50)
     @Enumerated(EnumType.STRING)
     private TipoArmaFogo tipoArmaFogo;
+
+    @Column(name = "situacao_arma_fogo", length = 15)
+    @Enumerated(EnumType.STRING)
+    private SituacaoArmaFogo situacaoArmaFogo;
 
     @Column(name= "especie_arma", length = 50)
     @Enumerated(EnumType.STRING)

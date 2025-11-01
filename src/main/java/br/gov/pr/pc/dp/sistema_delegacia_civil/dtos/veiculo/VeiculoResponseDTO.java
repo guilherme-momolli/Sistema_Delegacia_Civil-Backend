@@ -45,6 +45,4 @@ public class VeiculoResponseDTO {
     private String numeroCrv;
     private String numeroCrlv;
     private String tabelaFipe;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }

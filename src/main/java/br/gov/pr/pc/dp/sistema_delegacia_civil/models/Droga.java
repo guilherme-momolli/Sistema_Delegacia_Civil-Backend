@@ -7,6 +7,7 @@ import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -32,6 +33,8 @@ public class Droga {
     @Column(name = "unidade_medida", length = 50)
     @Enumerated(EnumType.STRING)
     private UnidadeMedida unidadeMedida;
+
+    private BigDecimal quantidade;
 
     @Column(name = "quantidade_por_extenso", columnDefinition = "TEXT")
     private String quantidadePorExtenso;

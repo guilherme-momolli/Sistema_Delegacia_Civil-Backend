@@ -29,6 +29,7 @@ public class PessoaResponseDTO {
     private String telefoneFixo;
     private String email;
     private EstadoCivil estadoCivil;
+    private String certificadoRegistro;
     private String profissao;
     private String nacionalidade;
     private String naturalidade;

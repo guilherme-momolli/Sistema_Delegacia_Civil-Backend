@@ -25,7 +25,6 @@ public class BemRequestDTO {
     private BigDecimal valorEstimado;
     private Long pessoaId;
     private Long delegaciaId;
-    private Long instituicaoId;
     private SituacaoBem situacaoBem;
     private String origem;
     private String numeroLacre;

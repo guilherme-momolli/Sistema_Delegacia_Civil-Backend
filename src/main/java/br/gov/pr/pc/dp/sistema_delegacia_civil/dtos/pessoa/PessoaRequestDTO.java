@@ -33,6 +33,7 @@ public class PessoaRequestDTO {
     private String email;
     private EstadoCivil estadoCivil;
     private String profissao;
+    private String certificadoRegistro;
     private String nacionalidade;
     private String naturalidade;
     private Etnia etnia;

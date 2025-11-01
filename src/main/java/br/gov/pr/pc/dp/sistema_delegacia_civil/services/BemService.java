@@ -1,5 +1,7 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.services;
 
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.bem.BemDashboardResponseDTO;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.bem.BemFiltroDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.bem.BemRequestDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.bem.BemResponseDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.bem.TipoBem;
@@ -7,12 +9,17 @@ import br.gov.pr.pc.dp.sistema_delegacia_civil.exceptions.file_storage.ResourceN
 import br.gov.pr.pc.dp.sistema_delegacia_civil.mappers.BemMapper;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Bem;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.repositories.BemRepository;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.specifications.BemSpecification;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +44,34 @@ public class BemService {
         Bem bem = bemRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Bem não encontrado com id: " + id));
         return BemMapper.toResponseDTO(bem);
+    }
+
+    public Page<BemResponseDTO> filtrarBens(BemFiltroDTO filtro, Pageable pageable) {
+        Specification<Bem> spec = BemSpecification.filtroCustomizado(filtro);
+        return bemRepository.findAll(spec, pageable)
+                .map(BemMapper::toResponseDTO);
+    }
+
+    public BemDashboardResponseDTO getBemResumo() {
+        try {
+            List<Bem> bens = bemRepository.findAll();
+
+            if (bens.isEmpty()) {
+                return new BemDashboardResponseDTO(
+                        0L,
+                        Map.of(),
+                        Map.of(),
+                        null,
+                        null,
+                        null
+                );
+            }
+
+            return BemMapper.toBemDashboard(bens);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao gerar resumo de bens: " + e.getMessage(), e);
+        }
     }
 
     @Transactional

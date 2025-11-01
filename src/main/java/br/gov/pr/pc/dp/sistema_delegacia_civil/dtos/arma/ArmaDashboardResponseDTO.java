@@ -1,7 +1,5 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.arma;
 
-
-import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.bem.BemRequestDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.arma.Calibre;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.arma.EspecieArma;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.arma.SituacaoArmaFogo;
@@ -10,17 +8,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Map;
+
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class ArmaRequestDTO {
-    private Long bemId;
-    private TipoArmaFogo tipoArmaFogo;
-    private EspecieArma especieArma;
-    private SituacaoArmaFogo situacaoArmaFogo;
-    private Calibre calibre;
-    private String numeroPorte;
-    private String numeroSerie;
-    private String numeroRegistro;
-    private String capacidade;
+@AllArgsConstructor
+public class ArmaDashboardResponseDTO {
+
+    private Map<Calibre, Long> totalPorCalibre;
+    private Map<EspecieArma, Long> totalPorEspecieArma;
+    private Map<SituacaoArmaFogo, Long> totalPorSituacaoArmaFogo;
+    private Map<TipoArmaFogo, Long> totalPorTipoArmaFogo;
 }

@@ -2,9 +2,10 @@ package br.gov.pr.pc.dp.sistema_delegacia_civil.enums.veiculo;
 
 public enum Cambio {
 
+    MANUAL,
     AUTOMATICO,
-    AUTOMATIZADO,
     CVT,
-    MANUAL;
+    DUPLA_EMBREAGEM,
+    AUTOMATIZADO
 
 }

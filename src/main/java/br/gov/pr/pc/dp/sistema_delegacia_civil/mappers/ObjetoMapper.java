@@ -50,9 +50,48 @@ public class ObjetoMapper {
         dto.setDimensoes(entity.getDimensoes());
         dto.setEstadoConservacao(entity.getEstadoConservacao());
         dto.setSituacaoObjeto(entity.getSituacaoObjeto());
-        dto.setCreatedAt(entity.getCreatedAt());
-        dto.setUpdatedAt(entity.getUpdatedAt());
 
         return dto;
     }
+
+    public static void toUpdate(ObjetoRequestDTO dto, Objeto entity) {
+        if (dto == null || entity == null) {
+            return;
+        }
+
+        if (dto.getTipoObjeto() != null) {
+            entity.setTipoObjeto(dto.getTipoObjeto());
+        }
+
+        if (dto.getNumeroSerie() != null) {
+            entity.setNumeroSerie(dto.getNumeroSerie());
+        }
+
+        if (dto.getCor() != null) {
+            entity.setCor(dto.getCor());
+        }
+
+        if (dto.getMaterial() != null) {
+            entity.setMaterial(dto.getMaterial());
+        }
+
+        if (dto.getDimensoes() != null) {
+            entity.setDimensoes(dto.getDimensoes());
+        }
+
+        if (dto.getEstadoConservacao() != null) {
+            entity.setEstadoConservacao(dto.getEstadoConservacao());
+        }
+
+        if (dto.getSituacaoObjeto() != null) {
+            entity.setSituacaoObjeto(dto.getSituacaoObjeto());
+        }
+
+        if (dto.getBemId() != null) {
+            Bem bem = new Bem();
+            bem.setId(dto.getBemId());
+            entity.setBem(bem);
+        }
+    }
+
 }

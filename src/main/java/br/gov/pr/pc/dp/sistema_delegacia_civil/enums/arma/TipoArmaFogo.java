@@ -6,44 +6,24 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum TipoArmaFogo {
 
     // Armas curtas
-    REVOLVER("Revólver"),
-    PISTOLA("Pistola"),
-    GARRUCHA("Garrucha"),
-    DERRINGER("Derringer"),
+    REVOLVER,
+    PISTOLA,
+    GARRUCHA,
+    DERRINGER,
 
     // Armas longas
-    ESPINGARDA("Espingarda"),
-    CARABINA("Carabina"),
-    FUZIL("Fuzil"),
-    METRALHADORA("Metralhadora"),
-    RIFLE("Rifle"),
-    ESCOPETA("Escopeta"),
+    ESPINGARDA,
+    CARABINA,
+    FUZIL,
+    METRALHADORA,
+    RIFLE,
+    ESCOPETA,
 
     // Outras
-    SUBMETRALHADORA("Submetralhadora"),
-    MOSQUETAO("Mosquetão"),
-    LANCA_GRANADAS("Lança-granadas"),
-    LANCA_FOGUETES("Lança-foguetes"),
-    PISTOLA_METRALHADORA("Pistola-metralhadora");
+    SUBMETRALHADORA,
+    MOSQUETAO,
+    LANCA_GRANADAS,
+    LANCA_FOGUETES,
+    PISTOLA_METRALHADORA;
 
-    private final String descricao;
-
-    TipoArmaFogo(String descricao) {
-        this.descricao = descricao;
-    }
-
-    @JsonValue
-    public String getDescricao() {
-        return descricao;
-    }
-
-    @JsonCreator
-    public static TipoArmaFogo fromString(String value) {
-        for (TipoArmaFogo tipo : TipoArmaFogo.values()) {
-            if (tipo.descricao.equalsIgnoreCase(value)) {
-                return tipo;
-            }
-        }
-        throw new IllegalArgumentException("Valor inválido para TipoArmaFogo: " + value);
-    }
 }

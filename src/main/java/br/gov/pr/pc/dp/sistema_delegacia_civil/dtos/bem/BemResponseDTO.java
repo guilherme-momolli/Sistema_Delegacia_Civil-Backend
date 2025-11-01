@@ -12,6 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -26,7 +27,6 @@ public class BemResponseDTO {
     private BigDecimal valorEstimado;
     private Long pessoaId;
     private Long delegaciaId;
-    private Long instituicaoId;
     private SituacaoBem situacaoBem;
     private String origem;
     private String numeroLacre;
@@ -37,4 +37,6 @@ public class BemResponseDTO {
     private ObjetoResponseDTO objeto;
     private VeiculoResponseDTO veiculo;
     private DrogaResponseDTO droga;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

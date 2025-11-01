@@ -41,10 +41,6 @@ public class Bem {
     @JoinColumn(name = "delegacia_id")
     private Delegacia delegacia;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "instituicao_id")
-    private Instituicao instituicao;
-
     @Column(name = "situacao_bem", length = 50)
     @Enumerated(EnumType.STRING)
     private SituacaoBem situacaoBem;
@@ -85,6 +81,4 @@ public class Bem {
     @OneToMany(mappedBy = "bem", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<BemEnvolvimento> bemEnvolvimentos;
 
-    @OneToMany(mappedBy = "bem", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<BemMovimentacao> bemMovimentacoes;
 }

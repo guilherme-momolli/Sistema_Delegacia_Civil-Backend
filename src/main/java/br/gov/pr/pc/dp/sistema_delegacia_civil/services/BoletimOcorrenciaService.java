@@ -1,5 +1,6 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.services;
 
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.boletim_ocorrencia.BoletimOcorrenciaDashboardResponseDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.boletim_ocorrencia.BoletimOcorrenciaRequestDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.boletim_ocorrencia.BoletimOcorrenciaResponseDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.helpers.BemEnvolvimentoHelper;
@@ -49,6 +50,11 @@ public class BoletimOcorrenciaService {
         return boletimRepository.findByDelegaciaId(delegaciaId).stream()
                 .map(BoletimOcorrenciaMapper::toResponseDTO)
                 .toList();
+    }
+
+    public BoletimOcorrenciaDashboardResponseDTO getBoletimOcorrenciaResumo() {
+        List<BoletimOcorrencia> boletins = this.boletimRepository.findAll();
+        return BoletimOcorrenciaMapper.toBoletimDashboard(boletins);
     }
 
     @Transactional

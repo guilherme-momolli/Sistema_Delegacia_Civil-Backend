@@ -1,11 +1,15 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.services;
 
 
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.boletim_ocorrencia.BoletimOcorrenciaDashboardResponseDTO;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.pessoa.PessoaDashboardResponseDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.pessoa.PessoaRequestDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.pessoa.PessoaResponseDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.helpers.EnderecoHelper;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.helpers.PessoaHelper;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.mappers.BoletimOcorrenciaMapper;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.mappers.PessoaMapper;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.models.BoletimOcorrencia;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 
@@ -21,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -51,6 +56,11 @@ public class PessoaService {
                 .map(PessoaMapper::toResponseDTO);
     }
 
+    public PessoaDashboardResponseDTO getPessoaResumo() {
+        List<Pessoa> pessoa = this.pessoaRepository.findAll();
+        return PessoaMapper.toPessoaDashboard(pessoa);
+    }
+
     @Transactional
     public PessoaResponseDTO createPessoa(PessoaRequestDTO dto, MultipartFile imagem) {
         Pessoa pessoa = PessoaMapper.toEntity(dto);
@@ -75,6 +85,8 @@ public class PessoaService {
         Pessoa pessoaExistente = pessoaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Pessoa não encontrada"));
 
+        PessoaHelper.validarCpfAlterado(pessoaExistente, dto, pessoaRepository);
+
         Pessoa pessoaAtualizada = PessoaMapper.toEntity(dto);
         pessoaAtualizada.setId(pessoaExistente.getId());
 
@@ -84,10 +96,12 @@ public class PessoaService {
             pessoaAtualizada.setImagemUrl(nomeArquivo);
         }
 
+        pessoaAtualizada.setEndereco(
+                EnderecoHelper.resolverEnderecoRequestDTO(dto.getEndereco(), enderecoRepository)
+        );
 
-        pessoaAtualizada.setEndereco(EnderecoHelper.resolverEnderecoRequestDTO(dto.getEndereco(), enderecoRepository));
-
-        return PessoaMapper.toResponseDTO(pessoaRepository.save(pessoaAtualizada));
+        Pessoa pessoaSalva = pessoaRepository.save(pessoaAtualizada);
+        return PessoaMapper.toResponseDTO(pessoaSalva);
     }
 
 

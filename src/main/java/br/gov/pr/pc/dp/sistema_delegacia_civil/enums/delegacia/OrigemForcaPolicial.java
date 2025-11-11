@@ -9,5 +9,6 @@ public enum OrigemForcaPolicial {
     PRF,
     PEN,
     DEPEN,
-    MP
+    MP,
+    DESCONHECIDO
 }

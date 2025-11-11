@@ -178,24 +178,45 @@ public class BemMapper {
         }
     }
 
-    public static BemDashboardResponseDTO toBemDashboard(List<Bem> bens){
+    public static BemDashboardResponseDTO toBemDashboard(List<Bem> bens) {
         long totalBens = bens.size();
 
         Map<SituacaoBem, Long> totalPorSituacaoBem = bens.stream()
                 .collect(Collectors.groupingBy(Bem::getSituacaoBem, Collectors.counting()));
 
-
         Map<TipoBem, Long> totalPorTipoBem = bens.stream()
                 .collect(Collectors.groupingBy(Bem::getTipoBem, Collectors.counting()));
 
-        ArmaDashboardResponseDTO armaDashboardResponseDTO = new ArmaDashboardResponseDTO();
-        DrogaDashboardResponseDTO drogaDashboardResponseDTO = new DrogaDashboardResponseDTO();
-        VeiculoDashboardResponseDTO veiculoDashboardResponseDTO = new VeiculoDashboardResponseDTO();
+        // ======= Filtra por tipo de bem =======
+        List<Arma> armas = bens.stream()
+                .filter(bem -> bem.getTipoBem() == TipoBem.ARMA && bem.getArma() != null)
+                .map(Bem::getArma)
+                .collect(Collectors.toList());
 
+        List<Droga> drogas = bens.stream()
+                .filter(bem -> bem.getTipoBem() == TipoBem.DROGA && bem.getDroga() != null)
+                .map(Bem::getDroga)
+                .collect(Collectors.toList());
 
-        return new BemDashboardResponseDTO(totalBens, totalPorTipoBem, totalPorSituacaoBem, armaDashboardResponseDTO, drogaDashboardResponseDTO, veiculoDashboardResponseDTO);
+        List<Veiculo> veiculos = bens.stream()
+                .filter(bem -> bem.getTipoBem() == TipoBem.VEICULO && bem.getVeiculo() != null)
+                .map(Bem::getVeiculo)
+                .collect(Collectors.toList());
 
+        ArmaDashboardResponseDTO armaDashboardResponseDTO = ArmaMapper.toArmaDashboard(armas);
+        DrogaDashboardResponseDTO drogaDashboardResponseDTO = DrogaMapper.toDrogaDashboard(drogas);
+        VeiculoDashboardResponseDTO veiculoDashboardResponseDTO = VeiculoMapper.toVeiculoDashboard(veiculos);
+
+        return new BemDashboardResponseDTO(
+                totalBens,
+                totalPorTipoBem,
+                totalPorSituacaoBem,
+                armaDashboardResponseDTO,
+                drogaDashboardResponseDTO,
+                veiculoDashboardResponseDTO
+        );
     }
+
 }
 
 

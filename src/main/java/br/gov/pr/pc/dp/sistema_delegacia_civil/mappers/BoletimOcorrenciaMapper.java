@@ -113,6 +113,68 @@ public class BoletimOcorrenciaMapper {
         return dto;
     }
 
+    public static void updateEntityFromDTO(BoletimOcorrenciaRequestDTO dto, BoletimOcorrencia entity) {
+        if (dto == null || entity == null) return;
+
+        entity.setBoletim(dto.getBoletim());
+        entity.setNatureza(dto.getNatureza());
+        entity.setRepresentacao(dto.getRepresentacao());
+        entity.setDataOcorrencia(dto.getDataOcorrencia());
+        entity.setOrigemForcaPolicial(dto.getOrigemForcaPolicial());
+
+        if (dto.getEndereco() != null) {
+            if (entity.getEndereco() == null) {
+                entity.setEndereco(EnderecoMapper.toEntity(dto.getEndereco()));
+            } else {
+                EnderecoMapper.updateEntityFromDTO(dto.getEndereco(), entity.getEndereco());
+            }
+        }
+
+        if (dto.getDelegaciaId() != null) {
+            Delegacia delegacia = new Delegacia();
+            delegacia.setId(dto.getDelegaciaId());
+            entity.setDelegacia(delegacia);
+        }
+
+        // Atualizar PESSOAS ENVOLVIDAS
+        entity.getPessoasEnvolvidas().clear();
+        if (dto.getPessoasEnvolvidas() != null) {
+            dto.getPessoasEnvolvidas().forEach(pe -> {
+                PessoaEnvolvimento envolvimento = new PessoaEnvolvimento();
+
+                Pessoa pessoa = new Pessoa();
+                pessoa.setId(pe.getPessoaId());
+                envolvimento.setPessoa(pessoa);
+                envolvimento.setTipoEnvolvimento(pe.getTipoEnvolvimento());
+                envolvimento.setObservacao(pe.getObservacao());
+
+                // 🔑 Define o lado dono
+                envolvimento.setBoletimOcorrencia(entity);
+
+                entity.getPessoasEnvolvidas().add(envolvimento);
+            });
+        }
+
+        // Atualizar BENS ENVOLVIDOS
+        entity.getBensEnvolvidos().clear();
+        if (dto.getBensEnvolvidos() != null) {
+            dto.getBensEnvolvidos().forEach(be -> {
+                BemEnvolvimento envolvimento = new BemEnvolvimento();
+
+                Bem bem = new Bem();
+                bem.setId(be.getBemId());
+                envolvimento.setBem(bem);
+                envolvimento.setTipoEnvolvimento(be.getTipoEnvolvimento());
+                envolvimento.setObservacao(be.getObservacao());
+
+                // 🔑 Define o lado dono da relação
+                envolvimento.setBoletimOcorrencia(entity);
+
+                entity.getBensEnvolvidos().add(envolvimento);
+            });
+        }
+    }
+
 
     public static BoletimOcorrenciaDashboardResponseDTO toBoletimDashboard(List<BoletimOcorrencia> boletins) {
         long totalBoletins = boletins.size();

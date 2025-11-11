@@ -18,7 +18,6 @@ import java.util.List;
 @NoArgsConstructor
 public class InqueritoPolicialRequestDTO {
 
-    private Long id;
     private String numeroJustica;
     private Long ordemIp;
     private LocalDate data;

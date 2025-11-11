@@ -14,6 +14,7 @@ import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Arma;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Bem;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -117,21 +118,29 @@ public class ArmaMapper {
         }
     }
 
-    public static ArmaDashboardResponseDTO toArmaDashboard(List<Arma> armas){
+    public static ArmaDashboardResponseDTO toArmaDashboard(List<Arma> armas) {
 
         Map<Calibre, Long> totalPorCalibre = armas.stream()
+                .filter(a -> a.getCalibre() != null)
                 .collect(Collectors.groupingBy(Arma::getCalibre, Collectors.counting()));
 
         Map<EspecieArma, Long> totalPorEspecieArma = armas.stream()
+                .filter(a -> a.getEspecieArma() != null)
                 .collect(Collectors.groupingBy(Arma::getEspecieArma, Collectors.counting()));
 
         Map<SituacaoArmaFogo, Long> totalPorSituacaoArmaFogo = armas.stream()
+                .filter(a -> a.getSituacaoArmaFogo() != null)
                 .collect(Collectors.groupingBy(Arma::getSituacaoArmaFogo, Collectors.counting()));
 
         Map<TipoArmaFogo, Long> totalPorTipoArmaFogo = armas.stream()
+                .filter(a -> a.getTipoArmaFogo() != null)
                 .collect(Collectors.groupingBy(Arma::getTipoArmaFogo, Collectors.counting()));
 
-        return new ArmaDashboardResponseDTO(totalPorCalibre, totalPorEspecieArma, totalPorSituacaoArmaFogo, totalPorTipoArmaFogo);
+        return new ArmaDashboardResponseDTO(
+                totalPorCalibre,
+                totalPorEspecieArma,
+                totalPorSituacaoArmaFogo,
+                totalPorTipoArmaFogo
+        );
     }
-
 }

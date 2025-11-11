@@ -3,7 +3,11 @@ package br.gov.pr.pc.dp.sistema_delegacia_civil.services;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.inquerito_policial.InqueritoPolicialDashboardResponseDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.inquerito_policial.InqueritoPolicialRequestDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.inquerito_policial.InqueritoPolicialResponseDTO;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.error.ErrorType;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.exceptions.inquerito_policial.InqueritoPolicialException;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.exceptions.inquerito_policial.InqueritoPolicialNotFoundException;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.helpers.BemEnvolvimentoHelper;
+import br.gov.pr.pc.dp.sistema_delegacia_civil.helpers.InqueritoPolicialHelper;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.helpers.PessoaEnvolvimentoHelper;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.mappers.InqueritoPolicialMapper;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.*;
@@ -11,12 +15,14 @@ import br.gov.pr.pc.dp.sistema_delegacia_civil.repositories.InqueritoPolicialRep
 import br.gov.pr.pc.dp.sistema_delegacia_civil.helpers.EntityHelper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class InqueritoPolicialService {
@@ -25,95 +31,149 @@ public class InqueritoPolicialService {
     private final EntityHelper entityHelper;
     private final PessoaEnvolvimentoHelper pessoaEnvolvimentoHelper;
     private final BemEnvolvimentoHelper bemEnvolvimentoHelper;
+    private final InqueritoPolicialHelper inqueritoPolicialHelper;
 
     @Transactional
     public List<InqueritoPolicialResponseDTO> findAll() {
-        return inqueritoRepository.findAll()
-                .stream()
+        List<InqueritoPolicial> inqueritos = inqueritoRepository.findAll();
+
+        if (inqueritos.isEmpty()) {
+            throw new InqueritoPolicialException(
+                    ErrorType.NAO_ENCONTRADO,
+                    "Nenhum inquérito policial encontrado.",
+                    "O repositório retornou lista vazia em findAll()."
+            );
+        }
+
+        return inqueritos.stream()
                 .map(InqueritoPolicialMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
-    // 🔹 BUSCAR POR ID
     @Transactional
     public InqueritoPolicialResponseDTO findById(Long id) {
         entityHelper.validarInqueritoPolicalExistente(id);
-        InqueritoPolicial inquerito = inqueritoRepository.findById(id).orElseThrow();
+
+        InqueritoPolicial inquerito = inqueritoRepository.findById(id)
+                .orElseThrow(() -> new InqueritoPolicialNotFoundException(id));
+
         return InqueritoPolicialMapper.toResponseDTO(inquerito);
     }
 
     @Transactional
     public List<InqueritoPolicialResponseDTO> getInqueritosByDelegacia(Long delegaciaId) {
         entityHelper.validarDelegaciaExistente(delegaciaId);
-        return inqueritoRepository.findByDelegaciaId(delegaciaId)
-                .stream()
+
+        List<InqueritoPolicial> inqueritos = inqueritoRepository.findByDelegaciaId(delegaciaId);
+
+        if (inqueritos.isEmpty()) {
+            throw new InqueritoPolicialException(
+                    ErrorType.NAO_ENCONTRADO,
+                    "Nenhum inquérito encontrado para esta delegacia.",
+                    "Delegacia ID " + delegaciaId + " não possui registros vinculados."
+            );
+        }
+
+        return inqueritos.stream()
                 .map(InqueritoPolicialMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public InqueritoPolicialDashboardResponseDTO getInqueritoResumo() {
-        List<InqueritoPolicial> inqueritos = this.inqueritoRepository.findAll();
+        List<InqueritoPolicial> inqueritos = inqueritoRepository.findAll();
         return InqueritoPolicialMapper.toInqueritoDashboard(inqueritos);
     }
 
-
     @Transactional
     public InqueritoPolicialResponseDTO createInqueritoPolicial(InqueritoPolicialRequestDTO requestDTO) {
+        if (requestDTO == null) {
+            throw new InqueritoPolicialException(
+                    ErrorType.VALIDACAO,
+                    "Os dados do inquérito são obrigatórios.",
+                    "DTO de requisição veio nulo em createInqueritoPolicial()."
+            );
+        }
+        try {
+            InqueritoPolicial inquerito = inqueritoPolicialHelper.montarInqueritoParaCriacao(requestDTO);
 
-        entityHelper.validarDelegaciaExistente(requestDTO.getDelegaciaId());
-        Delegacia delegacia = new Delegacia();
-        delegacia.setId(requestDTO.getDelegaciaId());
+            List<PessoaEnvolvimento> pessoas = pessoaEnvolvimentoHelper.mapearPessoas(
+                    requestDTO.getPessoasEnvolvidas(), inquerito
+            );
 
-        InqueritoPolicial inquerito = InqueritoPolicialMapper.toEntity(requestDTO, delegacia);
+            List<BemEnvolvimento> bens = bemEnvolvimentoHelper.mapearBensPorInqueritoPolicial(
+                    requestDTO.getBensEnvolvidos(), inquerito
+            );
 
-        InqueritoPolicial salvo = inqueritoRepository.save(inquerito);
+            inquerito.setPessoasEnvolvidas(pessoas);
+            inquerito.setBensEnvolvidos(bens);
 
-        List<PessoaEnvolvimento> pessoasEnvolvidas =
-                pessoaEnvolvimentoHelper.mapearPessoas(requestDTO.getPessoasEnvolvidas(), salvo);
-        List<BemEnvolvimento> bensEnvolvidos =
-                bemEnvolvimentoHelper.mapearBensPorInqueritoPolicial(requestDTO.getBensEnvolvidos(), salvo);
+            InqueritoPolicial salvo = inqueritoRepository.save(inquerito);
 
-        salvo.setPessoasEnvolvidas(new ArrayList<>(pessoasEnvolvidas));
-        salvo.setBensEnvolvidos(new ArrayList<>(bensEnvolvidos));
+            return InqueritoPolicialMapper.toResponseDTO(salvo);
 
-        InqueritoPolicial atualizado = inqueritoRepository.save(salvo);
-
-        return InqueritoPolicialMapper.toResponseDTO(atualizado);
+        } catch (InqueritoPolicialException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("Erro ao criar inquérito policial: {}", e.getMessage(), e);
+            throw new InqueritoPolicialException(
+                    ErrorType.INTERNO,
+                    "Erro ao criar o inquérito policial.",
+                    e
+            );
+        }
     }
 
     @Transactional
     public InqueritoPolicialResponseDTO updateInqueritoPolicial(Long id, InqueritoPolicialRequestDTO requestDTO) {
+        entityHelper.validarInqueritoPolicalExistente(id);
 
-        InqueritoPolicial existente = inqueritoRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Inquérito não encontrado"));
+        try {
+            InqueritoPolicial existente = inqueritoRepository.findById(id)
+                    .orElseThrow(() -> new InqueritoPolicialNotFoundException(id));
 
-        InqueritoPolicialMapper.updateEntityFromDTO(requestDTO, existente);
+            InqueritoPolicialMapper.updateEntityFromDTO(requestDTO, existente);
+            inqueritoPolicialHelper.atualizarDelegacia(existente, requestDTO.getDelegaciaId());
 
-        if (requestDTO.getDelegaciaId() != null) {
-            entityHelper.validarDelegaciaExistente(requestDTO.getDelegaciaId());
-            Delegacia delegacia = new Delegacia();
-            delegacia.setId(requestDTO.getDelegaciaId());
-            existente.setDelegacia(delegacia);
+            existente.getPessoasEnvolvidas().clear();
+            existente.getPessoasEnvolvidas().addAll(
+                    pessoaEnvolvimentoHelper.mapearPessoas(requestDTO.getPessoasEnvolvidas(), existente)
+            );
+
+            existente.getBensEnvolvidos().clear();
+            existente.getBensEnvolvidos().addAll(
+                    bemEnvolvimentoHelper.mapearBensPorInqueritoPolicial(requestDTO.getBensEnvolvidos(), existente)
+            );
+
+            InqueritoPolicial atualizado = inqueritoRepository.save(existente);
+            return InqueritoPolicialMapper.toResponseDTO(atualizado);
+
+        } catch (InqueritoPolicialException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("Erro ao atualizar inquérito policial ID {}: {}", id, e.getMessage(), e);
+            throw new InqueritoPolicialException(
+                    ErrorType.INTERNO,
+                    "Erro ao atualizar o inquérito policial.",
+                    e
+            );
         }
-
-        existente.getPessoasEnvolvidas().clear();
-        List<PessoaEnvolvimento> envolvimentos =
-                pessoaEnvolvimentoHelper.mapearPessoas(requestDTO.getPessoasEnvolvidas(), existente);
-        existente.setPessoasEnvolvidas(new ArrayList<>(envolvimentos));
-
-        List<BemEnvolvimento> bensEnvolvidos =
-                bemEnvolvimentoHelper.mapearBensPorInqueritoPolicial(requestDTO.getBensEnvolvidos(), existente);
-        existente.setBensEnvolvidos(new ArrayList<>(bensEnvolvidos));
-
-
-        InqueritoPolicial atualizado = inqueritoRepository.save(existente);
-        return InqueritoPolicialMapper.toResponseDTO(atualizado);
     }
+
 
     @Transactional
     public void delete(Long id) {
         entityHelper.validarInqueritoPolicalExistente(id);
-        inqueritoRepository.deleteById(id);
+
+        try {
+            inqueritoRepository.deleteById(id);
+        } catch (Exception e) {
+            log.error("Erro ao deletar inquérito ID {}: {}", id, e.getMessage(), e);
+            throw new InqueritoPolicialException(
+                    ErrorType.INTERNO,
+                    "Erro ao excluir o inquérito policial.",
+                    e
+            );
+        }
     }
 }
-

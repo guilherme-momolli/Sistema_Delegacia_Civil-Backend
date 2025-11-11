@@ -58,7 +58,7 @@ public class BoletimOcorrenciaController {
             @PathVariable Long id,
             @Valid @RequestBody BoletimOcorrenciaRequestDTO requestDTO) {
         BoletimOcorrenciaResponseDTO boletim = boletimService.updateBoletim(id, requestDTO);
-        return ResponseEntity.ok(boletim);
+            return ResponseEntity.ok(boletim);
     }
 
     @Operation(summary = "Excluir boletim de ocorrência")

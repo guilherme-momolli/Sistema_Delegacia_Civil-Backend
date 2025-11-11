@@ -12,6 +12,7 @@ import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Droga;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.Veiculo;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collector;

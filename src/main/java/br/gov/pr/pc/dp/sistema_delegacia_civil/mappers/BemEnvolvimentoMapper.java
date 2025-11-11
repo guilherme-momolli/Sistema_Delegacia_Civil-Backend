@@ -19,6 +19,7 @@ public class BemEnvolvimentoMapper {
                 .bem(bem)
                 .inqueritoPolicial(inquerito)
                 .tipoEnvolvimento(dto.getTipoEnvolvimento())
+                .observacao(dto.getObservacao())
                 .build();
     }
 
@@ -28,6 +29,7 @@ public class BemEnvolvimentoMapper {
         return BemEnvolvimento.builder()
                 .bem(bem)
                 .boletimOcorrencia(boletim)
+                .observacao(dto.getObservacao())
                 .tipoEnvolvimento(dto.getTipoEnvolvimento())
                 .build();
     }
@@ -38,6 +40,7 @@ public class BemEnvolvimentoMapper {
         return BemEnvolvimentoResponseDTO.builder()
                 .id(entity.getId())
                 .bemId(entity.getBem().getId())
+                .observacao(entity.getObservacao())
                 .boletimOcorrenciaId(
                         entity.getBoletimOcorrencia() != null ? entity.getBoletimOcorrencia().getId() : null
                 )

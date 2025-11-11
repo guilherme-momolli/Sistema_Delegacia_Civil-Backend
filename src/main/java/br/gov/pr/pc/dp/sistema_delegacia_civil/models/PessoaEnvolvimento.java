@@ -30,12 +30,12 @@ public class PessoaEnvolvimento {
     private Pessoa pessoa;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "boletim_id") // pode ser null
+    @JoinColumn(name = "boletim_id") 
     @JsonBackReference("boletim-pessoas")
     private BoletimOcorrencia boletimOcorrencia;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "inquerito_id") // pode ser null
+    @JoinColumn(name = "inquerito_id")
     @JsonBackReference("inquerito-pessoas")
     private InqueritoPolicial inqueritoPolicial;
 

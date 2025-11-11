@@ -1,5 +1,6 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.bem_envolvimento;
 
+import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.bem.BemTipoEnvolvimento;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.BoletimOcorrencia;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.models.InqueritoPolicial;
 import lombok.AllArgsConstructor;
@@ -20,6 +21,7 @@ public class BemEnvolvimentoRequestDTO {
     private Long bemId;
     private Long boletimOcorrenciaId;
     private Long inqueritoPolicialId;
-    private String tipoEnvolvimento;
+    private BemTipoEnvolvimento tipoEnvolvimento;
+    private String observacao;
     private LocalDate dataEnvolvimento;
 }

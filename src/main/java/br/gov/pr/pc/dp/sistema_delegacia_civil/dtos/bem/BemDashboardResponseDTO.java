@@ -2,7 +2,6 @@ package br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.bem;
 
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.arma.ArmaDashboardResponseDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.droga.DrogaDashboardResponseDTO;
-import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.objeto.ObjetoDashboardResponseDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.dtos.veiculo.VeiculoDashboardResponseDTO;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.bem.SituacaoBem;
 import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.bem.TipoBem;
@@ -20,8 +19,8 @@ public class BemDashboardResponseDTO {
     private long totalBens;
     private Map<TipoBem, Long> totalPorTipoBem;
     private Map<SituacaoBem, Long> totalPorSituacaoBem;
-    private ArmaDashboardResponseDTO armaDashboardResponseDTO;
-    private DrogaDashboardResponseDTO drogaDashboardResponseDTO;
+    private ArmaDashboardResponseDTO armaDashboardResponse;
+    private DrogaDashboardResponseDTO drogaDashboardResponse;
 //    private ObjetoDashboardResponseDTO ObjetoDashboardResponseDTO;
-    private VeiculoDashboardResponseDTO VeiculodashboardResponseDTO;
+    private VeiculoDashboardResponseDTO veiculoDashboardResponse;
 }

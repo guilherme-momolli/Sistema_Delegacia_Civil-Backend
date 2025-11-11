@@ -5,6 +5,7 @@ public enum SituacaoInquerito {
     ANDAMENTO,
     FINALIZADO,
     DENUNCIADO,
-    RELATADO
+    RELATADO,
+    DESCONHECIDO
 
 }

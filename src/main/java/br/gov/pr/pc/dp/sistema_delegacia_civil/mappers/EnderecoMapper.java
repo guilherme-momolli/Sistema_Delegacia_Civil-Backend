@@ -37,4 +37,17 @@ public class EnderecoMapper {
         endereco.setCep(dto.getCep());
         return endereco;
     }
+
+    public static void updateEntityFromDTO(EnderecoRequestDTO dto, Endereco entity) {
+        if (dto == null || entity == null) return;
+
+        if (dto.getNumero() != null) entity.setNumero(dto.getNumero());
+        if (dto.getLogradouro() != null) entity.setLogradouro(dto.getLogradouro());
+        if (dto.getBairro() != null) entity.setBairro(dto.getBairro());
+        if (dto.getMunicipio() != null) entity.setMunicipio(dto.getMunicipio());
+        if (dto.getUf() != null) entity.setUf(dto.getUf());
+        if (dto.getPais() != null) entity.setPais(dto.getPais());
+        if (dto.getCep() != null) entity.setCep(dto.getCep());
+    }
+
 }

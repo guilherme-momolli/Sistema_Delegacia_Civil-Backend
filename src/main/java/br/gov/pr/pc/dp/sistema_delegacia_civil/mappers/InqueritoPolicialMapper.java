@@ -11,6 +11,7 @@ import br.gov.pr.pc.dp.sistema_delegacia_civil.models.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class InqueritoPolicialMapper {
@@ -19,7 +20,6 @@ public class InqueritoPolicialMapper {
         if (dto == null) return null;
 
         InqueritoPolicial entity = new InqueritoPolicial();
-        entity.setId(dto.getId());
         entity.setNumeroJustica(dto.getNumeroJustica());
         entity.setOrdemIp(dto.getOrdemIp());
         entity.setData(dto.getData());
@@ -129,10 +129,16 @@ public class InqueritoPolicialMapper {
         long totalInqueritos = inqueritos.size();
 
         Map<SituacaoInquerito, Long> totalPorSituacaoInquerito = inqueritos.stream()
-                .collect(Collectors.groupingBy(InqueritoPolicial::getSituacaoInquerito, Collectors.counting()));
+                .collect(Collectors.groupingBy(
+                        i -> Optional.ofNullable(i.getSituacaoInquerito()).orElse(SituacaoInquerito.DESCONHECIDO),
+                        Collectors.counting()
+                ));
 
         Map<OrigemForcaPolicial, Long> totalPorOrigem = inqueritos.stream()
-                .collect(Collectors.groupingBy(InqueritoPolicial::getOrigemForcaPolicial, Collectors.counting()));
+                .collect(Collectors.groupingBy(
+                        i -> Optional.ofNullable(i.getOrigemForcaPolicial()).orElse(OrigemForcaPolicial.DESCONHECIDO),
+                        Collectors.counting()
+                ));
 
         return new InqueritoPolicialDashboardResponseDTO(totalInqueritos, totalPorOrigem, totalPorSituacaoInquerito);
     }

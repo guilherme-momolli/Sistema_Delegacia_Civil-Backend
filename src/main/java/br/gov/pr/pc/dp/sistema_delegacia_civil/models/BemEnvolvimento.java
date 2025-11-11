@@ -1,5 +1,7 @@
 package br.gov.pr.pc.dp.sistema_delegacia_civil.models;
 
+import br.gov.pr.pc.dp.sistema_delegacia_civil.enums.bem.BemTipoEnvolvimento;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,16 +28,22 @@ public class BemEnvolvimento {
     @JoinColumn(name = "bem_id", nullable = false)
     private Bem bem;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "boletim_id")
+    @JsonBackReference("boletim-bens")
     private BoletimOcorrencia boletimOcorrencia;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inquerito_id")
+    @JsonBackReference("inquerito-bens")
     private InqueritoPolicial inqueritoPolicial;
 
     @Column(name = "tipo_envolvimento", length = 50)
-    private String tipoEnvolvimento;
+    @Enumerated(EnumType.STRING)
+    private BemTipoEnvolvimento tipoEnvolvimento;
+
+    @Column(name = "observacao", columnDefinition = "TEXT")
+    private String observacao;
 
     @CreationTimestamp
     @Column(name = "data_envolvimento", columnDefinition = "TIMESTAMP WITH TIME ZONE")

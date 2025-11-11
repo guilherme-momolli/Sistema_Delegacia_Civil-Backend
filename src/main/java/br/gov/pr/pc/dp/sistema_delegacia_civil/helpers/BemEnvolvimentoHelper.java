@@ -33,6 +33,7 @@ public class BemEnvolvimentoHelper {
                     return BemEnvolvimento.builder()
                             .bem(bem)
                             .boletimOcorrencia(boletim)
+                            .observacao(dto.getObservacao())
                             .tipoEnvolvimento(dto.getTipoEnvolvimento())
                             .dataEnvolvimento(dto.getDataEnvolvimento())
                             .build();
@@ -54,6 +55,7 @@ public class BemEnvolvimentoHelper {
                             .bem(bem)
                             .inqueritoPolicial(inquerito)
                             .tipoEnvolvimento(dto.getTipoEnvolvimento())
+                            .observacao(dto.getObservacao())
                             .dataEnvolvimento(dto.getDataEnvolvimento())
                             .build();
                 })

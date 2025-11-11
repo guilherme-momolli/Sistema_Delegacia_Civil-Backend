@@ -47,13 +47,8 @@ public class InqueritoPolicialController {
     @PostMapping("/create")
     public ResponseEntity<InqueritoPolicialResponseDTO> create(
             @Valid @RequestBody InqueritoPolicialRequestDTO requestDTO) {
-        try{
-            InqueritoPolicialResponseDTO response = inqueritoService.createInqueritoPolicial(requestDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        }catch (Exception e ){
-            e.printStackTrace();
-            return ResponseEntity.badRequest().build();
-        }
+        InqueritoPolicialResponseDTO response = inqueritoService.createInqueritoPolicial(requestDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @Operation(summary = "Atualizar um inquérito policial existente")
@@ -61,8 +56,9 @@ public class InqueritoPolicialController {
     public ResponseEntity<InqueritoPolicialResponseDTO> update(
             @PathVariable Long id,
             @Valid @RequestBody InqueritoPolicialRequestDTO requestDTO) {
+
         InqueritoPolicialResponseDTO response = inqueritoService.updateInqueritoPolicial(id, requestDTO);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @Operation(summary = "Excluir um inquérito policial")

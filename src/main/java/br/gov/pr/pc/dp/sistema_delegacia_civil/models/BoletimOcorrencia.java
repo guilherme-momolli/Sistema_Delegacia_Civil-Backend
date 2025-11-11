@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -42,12 +43,12 @@ public class BoletimOcorrencia {
 
     @OneToMany(mappedBy = "boletimOcorrencia", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("boletim-pessoas")
-    @lombok.ToString.Exclude
+    @ToString.Exclude
     private List<PessoaEnvolvimento> pessoasEnvolvidas = new ArrayList<>();
 
     @OneToMany(mappedBy = "boletimOcorrencia", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference("boletim-pessoas")
-    @lombok.ToString.Exclude
+    @JsonManagedReference("boletim-bens")
+    @ToString.Exclude
     private List<BemEnvolvimento> bensEnvolvidos = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -58,7 +58,7 @@ public class InqueritoPolicial {
     private List<PessoaEnvolvimento> pessoasEnvolvidas = new ArrayList<>();
 
     @OneToMany(mappedBy = "inqueritoPolicial", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference("inquerito-pessoas")
+    @JsonManagedReference("inquerito-bens")
     @ToString.Exclude
     private List<BemEnvolvimento> bensEnvolvidos = new ArrayList<>();
 
